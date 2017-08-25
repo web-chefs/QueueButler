@@ -1,23 +1,20 @@
 {
-    "name": ":vendor/:package_name",
+    "name": "web-chefs/queue-butler",
     "type": "library",
-    "description": ":package_description",
+    "description": "Laravel Artisan commands that make it easy to run job queues using the Scheduler without the need for installing for running the Queue Daemon or installing Supervisor, allowing for effectively running Job Queues from a cron via the Scheduler.",
     "keywords": [
-        ":vendor",
-        ":package_name"
+        "QueueButler"
     ],
-    "homepage": "https://github.com/:vendor/:package_name",
+    "homepage": "https://github.com/web-chefs/QueueButler",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": ":author_email",
-            "homepage": ":author_website",
-            "role": "Developer"
+            "name": "Justin Fossey"
         }
     ],
     "require": {
-        "php" : "~5.6|~7.0"
+        "php" : "~5.6|~7.0",
+        "laravel/framework": "5.*"
     },
     "require-dev": {
         "phpunit/phpunit" : ">=5.4.3",
@@ -25,12 +22,12 @@
     },
     "autoload": {
         "psr-4": {
-            ":vendor\\:package_name\\": "src"
+            "WebChefs\\QueueButler\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            ":vendor\\:package_name\\": "tests"
+            "WebChefs\\QueueButler\\": "tests"
         }
     },
     "scripts": {
@@ -45,5 +42,7 @@
     },
     "config": {
         "sort-packages": true
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
