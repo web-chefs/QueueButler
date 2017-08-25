@@ -11,23 +11,15 @@ Laravel Artisan commands that make it easy to run job queues using the Scheduler
 
 This is ideal for shared hosting or situations where you are not fully in control of the services or management of your hosting infrastructure and all you have access to is a Cron.
 
-## Coding Standards
+## Standards
 
+* psr-1
+* psr-2
+* psr-4
 
 ## Versions
 
 Developed and tested on Laravel 5.4 using PHP 5.6. Should work on older versions, if you successfully test the package on a older version of Laravel and PHP, please let us know using the issue tracker and we will give you credit and list it here.
-
-## Structure
-
-If any of the following are applicable to your project, then the directory structure should follow industry best practises by being named the following.
-
-```
-config/
-src/
-tests/
-vendor/
-```
 
 ## Install
 
