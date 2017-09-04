@@ -14,10 +14,19 @@ Developed and tested on Laravel 5.4 using PHP 5.6. Should work on older versions
 
 ## Install
 
-Via Composer
+__Via Composer__
 
 ``` bash
 $ composer require web-chefs/queue-butler
+```
+
+__Add Service Provider to `config/app.php`__
+
+```php
+'providers' => [
+   // Other Service Providers
+   WebChefs\QueueButler\QueueButlerServiceProvider::class,
+];
 ```
 
 ## Usage
