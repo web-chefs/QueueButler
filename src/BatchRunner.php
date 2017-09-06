@@ -34,7 +34,7 @@ class BatchRunner extends Worker
     {
         $this->startTime = microtime(true);
         $this->jobCount  = 0;
-        parent::daemon($connectionName, $queue, $options);
+        $this->daemon($connectionName, $queue, $options);
     }
 
     /**
@@ -77,13 +77,22 @@ class BatchRunner extends Worker
      */
     protected function stopIfNecessary(WorkerOptions $options, $lastRestart)
     {
+        $this->checkLimits($options);
+        parent::stopIfNecessary($options, $lastRestart);
+    }
+
+    /**
+     * Check our batch limits and stop the command if we reach a limit.
+     *
+     * @param  WorkerOptions $options
+     */
+    protected function checkLimits(WorkerOptions $options)
+    {
         $this->validOptions($options);
 
         if ($this->isTimeLimit($options->timeLimit) || $this->isJobLimit($options->jobLimit)) {
             $this->stop();
         }
-
-        parent::stopIfNecessary($options, $lastRestart);
     }
 
     /**
