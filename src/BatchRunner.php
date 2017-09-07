@@ -23,6 +23,11 @@ class BatchRunner extends Worker
     protected $startTime;
 
     /**
+     * @var \Illuminate\Queue\WorkerOptions
+     */
+    protected $options;
+
+    /**
      * Listen to the given queue in a loop.
      *
      * @param  string  $connectionName
@@ -32,9 +37,10 @@ class BatchRunner extends Worker
      */
     public function batch($connectionName, $queue, BatchOptions $options)
     {
+        $this->validOptions($options);
         $this->startTime = microtime(true);
         $this->jobCount  = 0;
-        $this->daemon($connectionName, $queue, $options);
+        parent::daemon($connectionName, $queue, $options);
     }
 
     /**
@@ -77,8 +83,20 @@ class BatchRunner extends Worker
      */
     protected function stopIfNecessary(WorkerOptions $options, $lastRestart)
     {
-        $this->checkLimits($options);
+        $this->checkLimits();
         parent::stopIfNecessary($options, $lastRestart);
+    }
+
+    /**
+     * Sleep the script for a given number of seconds.
+     *
+     * @param  int   $seconds
+     * @return void
+     */
+    public function sleep($seconds)
+    {
+        $this->checkLimits();
+        parent::sleep($seconds);
     }
 
     /**
@@ -86,11 +104,9 @@ class BatchRunner extends Worker
      *
      * @param  WorkerOptions $options
      */
-    protected function checkLimits(WorkerOptions $options)
+    protected function checkLimits()
     {
-        $this->validOptions($options);
-
-        if ($this->isTimeLimit($options->timeLimit) || $this->isJobLimit($options->jobLimit)) {
+        if ($this->isTimeLimit($this->options->timeLimit) || $this->isJobLimit($this->options->jobLimit)) {
             $this->stop();
         }
     }
@@ -127,7 +143,8 @@ class BatchRunner extends Worker
      */
     protected function validOptions(BatchOptions $options)
     {
-        // Should be empty.
+        // Store valid options
+        $this->options = $options;
     }
 
 }
