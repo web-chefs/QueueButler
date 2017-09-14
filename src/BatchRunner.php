@@ -2,8 +2,12 @@
 
 namespace WebChefs\QueueButler;
 
+// PHP
+use Exception;
+
 // Package
 use WebChefs\QueueButler\BatchOptions;
+use WebChefs\QueueButler\Exceptions\StopBatch;
 
 // Framework
 use Illuminate\Queue\Worker;
@@ -40,7 +44,17 @@ class BatchRunner extends Worker
         $this->validOptions($options);
         $this->startTime = microtime(true);
         $this->jobCount  = 0;
-        parent::daemon($connectionName, $queue, $options);
+        try {
+           $this->daemon($connectionName, $queue, $options);
+        }
+        catch (Exception $excption) {
+            // Check if the batch was cleanly stopped
+            if ($excption instanceof StopBatch) {
+                // The batch hit a limit
+                return;
+            }
+            throw $excption;
+        }
     }
 
     /**
@@ -56,7 +70,8 @@ class BatchRunner extends Worker
         $this->validOptions($options);
 
         // For daemon to use batch if called by accident.
-        $this->batch($connectionName, $queue, $options);
+        // $this->batch($connectionName, $queue, $options);
+        parent::daemon($connectionName, $queue, $options);
     }
 
     /**
@@ -72,7 +87,19 @@ class BatchRunner extends Worker
         $this->validOptions($options);
 
         parent::runJob($job, $connectionName, $options);
+    }
+
+    /**
+     * Raise the after queue job event.
+     *
+     * @param  string  $connectionName
+     * @param  \Illuminate\Contracts\Queue\Job  $job
+     * @return void
+     */
+    protected function raiseAfterJobEvent($connectionName, $job)
+    {
         $this->jobCount++;
+        parent::raiseAfterJobEvent($connectionName, $job);
     }
 
     /**
@@ -97,6 +124,17 @@ class BatchRunner extends Worker
     {
         $this->checkLimits();
         parent::sleep($seconds);
+    }
+
+    /**
+     * Stop listening and bail out of the script.
+     *
+     * @return void
+     */
+    public function stop()
+    {
+        // Cleanly handle stopping a batch without resorting to killing the process
+        throw new StopBatch();
     }
 
     /**
