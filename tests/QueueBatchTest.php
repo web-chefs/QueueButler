@@ -61,16 +61,12 @@ class QueueBatchTest extends TestCase
 
         // Validate its our job
         $this->assertEquals($job->resolveName(), QueueBatchTestJob::class);
-        // dd($job->getName(), $job->resolveName(), $job->getDatabaseJob(), $job->payload());
+        $job->release();
 
 
-        $process = new Process('php artisan queue:batch --queue=default --job-limit=1 --time-limit=5');
-        $process->run();
-
+        $this->artisan('queue:batch', ['--job-limit' => 1, '--time-limit' => 1]);
         $this->assertEquals(0, $queue->count());
-
-        // $this->artisan('queue:batch', ['--job-limit' => 1, '--time-limit' => 5]);
-        // $this->assertEquals($this->answerToken, $this->app->bind('QueueBatchRunTestAnswer'));
+        $this->assertEquals($this->answerToken, $this->app->bind('QueueBatchRunTestAnswer'));
 
         // 1. Test for job queue driver
         // 2. Test for job added
