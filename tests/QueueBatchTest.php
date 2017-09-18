@@ -30,7 +30,7 @@ class QueueBatchTest extends TestCase
     protected $answerToken;
 
     /**
-     * Test our queue was setup and is empty.
+     * Test our test queue was setup correctly and and is empty.
      *
      * @return void
      */
@@ -39,38 +39,42 @@ class QueueBatchTest extends TestCase
         $queue = $this->queueTestDbQuery();
         $this->assertEquals($queue->count(), 0);
 
-        // Check our queues are setup and working
+        // Check our queues are setup is using our in memory database
         $this->assertEquals(Queue::getName(), $this->queueTestDbName());
     }
 
     /**
-     * A basic test example.
+     * Test queue:batch with a real job run using sqlite in memory database with
+     * a random string defined as a Application binding that the job uses to
+     * create its own Application binding response. In this way Application
+     * bindings are used to maintain state between the test and the job
+     * providing a way to run an assertEquals() bases on a Job's processing.
      *
      * @return void
      */
     public function testBatch()
     {
         // $tables = DB::connection()->getDoctrineSchemaManager()->listTableNames();
-        $this->setupJobAnswer();
 
+        // Setup Job testing Application Bindings
+        $this->setupJobAnswerToken();
+
+        // Test our queue works and our Test job gets push on to the queue
         $queue = $this->queueTestDbQuery();
         dispatch(new QueueBatchTestJob);
         $this->assertEquals(1, $queue->count());
 
+        // Validate the job is our job
         $job = Queue::pop();
-
-        // Validate its our job
         $this->assertEquals($job->resolveName(), QueueBatchTestJob::class);
+
+        // Put the job back on the queue for processing
         $job->release();
 
-
-        $this->artisan('queue:batch', ['--job-limit' => 1, '--time-limit' => 1]);
+        // Test Job queue processing using queue:batch
+        $this->artisan('queue:batch', ['--job-limit' => 1, '--time-limit' => 2]);
         $this->assertEquals(0, $queue->count());
-        $this->assertEquals($this->answerToken, $this->app->bind('QueueBatchRunTestAnswer'));
-
-        // 1. Test for job queue driver
-        // 2. Test for job added
-        // 3. Test job is processed
+        $this->assertEquals($this->answerToken, $this->app->make('QueueBatchJobAnswer'));
     }
 
     /**
@@ -78,7 +82,7 @@ class QueueBatchTest extends TestCase
      *
      * @return void
      */
-    protected function setupJobAnswer()
+    protected function setupJobAnswerToken()
     {
         $this->answerToken = Str::random();
         app()->bind('QueueBatchRunAnswerToken', function($app) {
