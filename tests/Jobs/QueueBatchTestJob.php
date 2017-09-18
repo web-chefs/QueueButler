@@ -17,7 +17,7 @@ class QueueBatchTestJob implements ShouldQueue
      */
     public function handle()
     {
-        app()->bind('QueueBatchRunTestAnswer', function($app) {
+        app()->bind('QueueBatchJobAnswer', function($app) {
             return $app->make('QueueBatchRunAnswerToken');
         });
     }
