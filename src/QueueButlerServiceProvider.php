@@ -2,6 +2,10 @@
 
 namespace WebChefs\QueueButler;
 
+// Exception
+use Exception;
+use DomainException;
+
 // Package
 use WebChefs\QueueButler\BatchRunner;
 use WebChefs\QueueButler\BatchCommand;
@@ -42,8 +46,15 @@ class QueueButlerServiceProvider extends ServiceProvider
         $versionParts = explode('.', $app::VERSION);
         list($major, $minor) = $versionParts;
 
-        $className = "WebChefs\QueueButler\Versions\Laravel{$major}_{$minor}BatchCommand";
-        return $app->make($className);
+        try {
+            $className = "WebChefs\QueueButler\Versions\Laravel{$major}_{$minor}BatchCommand";
+            $instance = $app->make($className);
+        }
+        catch(Exception $e) {
+            throw new DomainException('It looks like your version of Laravel (' . "{$major}.{$minor}" . ') is not supported by the QueueButler queue:batch command. Please open an issue to request support for your version If there is enough demand for a version will consider it.');
+        }
+
+        return $instance;
     }
 
 }
