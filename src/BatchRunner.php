@@ -8,12 +8,14 @@ use Exception;
 // Package
 use WebChefs\QueueButler\BatchOptions;
 use WebChefs\QueueButler\Exceptions\StopBatch;
+use WebChefs\QueueButler\Versions\Contracts\IsVersionSmartBatchRunner;
 
 // Framework
 use Illuminate\Queue\Worker;
 use Illuminate\Queue\WorkerOptions;
 
 class BatchRunner extends Worker
+               implements IsVersionSmartBatchRunner
 {
 
     /**
@@ -100,6 +102,7 @@ class BatchRunner extends Worker
     {
         $this->jobCount++;
         parent::raiseAfterJobEvent($connectionName, $job);
+        $this->checkLimits();
     }
 
     /**
@@ -110,8 +113,8 @@ class BatchRunner extends Worker
      */
     protected function stopIfNecessary(WorkerOptions $options, $lastRestart)
     {
-        $this->checkLimits();
         parent::stopIfNecessary($options, $lastRestart);
+        $this->checkLimits();
     }
 
     /**

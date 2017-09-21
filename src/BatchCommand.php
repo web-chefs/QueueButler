@@ -3,8 +3,9 @@
 namespace WebChefs\QueueButler;
 
 // Package
-use WebChefs\QueueButler\BatchRunner;
+// use WebChefs\QueueButler\BatchRunner;
 use WebChefs\QueueButler\BatchOptions;
+use WebChefs\QueueButler\Versions\Contracts\IsVersionSmartBatchRunner;
 
 // Framework
 use Illuminate\Queue\Console\WorkCommand;
@@ -42,8 +43,9 @@ class BatchCommand extends WorkCommand
      * @param  \Illuminate\Queue\Worker  $worker
      * @return void
      */
-    public function __construct(BatchRunner $worker)
+    public function __construct(IsVersionSmartBatchRunner $worker)
     {
+        // Run upstream constructors
         parent::__construct($worker);
     }
 

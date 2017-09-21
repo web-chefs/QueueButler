@@ -9,6 +9,7 @@ use DomainException;
 // Package
 use WebChefs\QueueButler\BatchRunner;
 use WebChefs\QueueButler\BatchCommand;
+use WebChefs\QueueButler\Versions\Contracts\IsVersionSmartBatchRunner;
 
 // Framework
 use Illuminate\Support\ServiceProvider;
@@ -29,7 +30,7 @@ class QueueButlerServiceProvider extends ServiceProvider
     {
         $this->commands($this->commands);
 
-        $this->app->bind(BatchRunner::class, function ($app) {
+        $this->app->bind(IsVersionSmartBatchRunner::class, function ($app) {
             return $this->resolveWorkerVersion($app);
         });
     }
@@ -48,10 +49,11 @@ class QueueButlerServiceProvider extends ServiceProvider
 
         try {
             $className = "WebChefs\QueueButler\Versions\Laravel{$major}_{$minor}BatchCommand";
-            $instance = $app->make($className);
+            $instance  = $app->make($className);
         }
         catch(Exception $e) {
-            throw new DomainException('It looks like your version of Laravel (' . "{$major}.{$minor}" . ') is not supported by the QueueButler queue:batch command. Please open an issue to request support for your version If there is enough demand for a version will consider it.');
+            // No version specific, fallback to parent
+            $instance = $app->make(BatchRunner::class);
         }
 
         return $instance;
