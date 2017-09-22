@@ -134,7 +134,7 @@ class BatchRunner extends Worker
      *
      * @return void
      */
-    public function stop()
+    public function stop($status = 0)
     {
         // Cleanly handle stopping a batch without resorting to killing the process
         throw new StopBatch();

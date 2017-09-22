@@ -3,7 +3,6 @@
 namespace WebChefs\QueueButler\Versions;
 
 // Package
-use Illuminate\Queue\WorkerOptions;
 use WebChefs\QueueButler\BatchRunner;
 
 class Laravel5_xBatchCommand extends BatchRunner

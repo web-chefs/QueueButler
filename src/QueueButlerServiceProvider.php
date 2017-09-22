@@ -47,16 +47,12 @@ class QueueButlerServiceProvider extends ServiceProvider
         $versionParts = explode('.', $app::VERSION);
         list($major, $minor) = $versionParts;
 
-        try {
-            $className = "WebChefs\QueueButler\Versions\Laravel{$major}_{$minor}BatchCommand";
-            $instance  = $app->make($className);
-        }
-        catch(Exception $e) {
-            // No version specific, fallback to parent
-            $instance = $app->make(BatchRunner::class);
+        $className = "WebChefs\QueueButler\Versions\Laravel{$major}_{$minor}BatchCommand";
+        if (!class_exists($className)) {
+            $className = BatchRunner::class;
         }
 
-        return $instance;
+        return $app->make($className);
     }
 
 }
