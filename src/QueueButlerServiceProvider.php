@@ -36,7 +36,7 @@ class QueueButlerServiceProvider extends ServiceProvider
     }
 
     /**
-     * Resolve the relevant BatchRunner template for this laravel version.
+     * Resolve the relevant BatchRunner child class for this Laravel version.
      *
      * @param  \Illuminate\Contracts\Foundation\Application $app
      *

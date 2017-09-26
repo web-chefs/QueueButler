@@ -2,6 +2,9 @@
 
 namespace WebChefs\QueueButler\Tests;
 
+// PHP
+use DomainException;
+
 // Package
 use WebChefs\QueueButler\Tests\Concerns\TestsQueueDb;
 
@@ -34,11 +37,41 @@ abstract class TestCase extends LaravelTestCase
         $this->testEnvPath = __DIR__;
         $this->setUpTraitEnv();
 
-        $this->app = require __DIR__ . '/../../../../bootstrap/app.php';
+        $this->app = require $this->discoverApp(__DIR__);
 
         $this->app->make(Kernel::class)->bootstrap();
 
         return $app;
+    }
+
+    /**
+     * A recursive method that works works backwards through the directory
+     * structure until it finds "bootstrap/app.php".
+     *
+     * This should normally resolve to __DIR__ . '../../boostrap/app.php'
+     *
+     * @param  string $path
+     *
+     * @return string
+     */
+    protected function discoverApp($path)
+    {
+        $file = $path . DIRECTORY_SEPARATOR . join(DIRECTORY_SEPARATOR, ['bootstrap', 'app.php']);
+
+        if (file_exists($file)) {
+            return $file;
+        }
+
+        // Go up a level
+        $path = dirname($path, 1);
+
+        // Check if we have reached the end
+        if ($path == '.' || $path == DIRECTORY_SEPARATOR) {
+            throw new DomainException('Lravel "bootstramp/app.php" could not be discovered.');
+        }
+
+        // Try again (recursive)
+        return $this->discoverApp($path);
     }
 
     /**
