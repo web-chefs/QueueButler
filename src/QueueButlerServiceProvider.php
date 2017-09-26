@@ -48,7 +48,7 @@ class QueueButlerServiceProvider extends ServiceProvider
         list($major, $minor) = $versionParts;
 
         $className = "WebChefs\QueueButler\Versions\Laravel{$major}_{$minor}BatchCommand";
-        if (!class_exists($className)) {
+        if (!class_exists($className, false)) {
             $className = BatchRunner::class;
         }
 
