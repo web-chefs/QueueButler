@@ -8,21 +8,14 @@ use WebChefs\QueueButler\Tests\Jobs\QueueBatchTestJob;
 
 // Framework
 use Illuminate\Support\Str;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-
-// Vendor
-use Symfony\Component\Process\Process;
 
 // Aliases
-use DB;
+// use DB;
 use Queue;
 
 class QueueBatchTest extends TestCase
 {
-    use DatabaseMigrations,
-        Concerns\TestsQueueDb;
+    use Concerns\TestsQueueDb;
 
     /**
      * @var string
