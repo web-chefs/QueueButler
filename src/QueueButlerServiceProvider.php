@@ -53,11 +53,8 @@ class QueueButlerServiceProvider extends ServiceProvider
         list($major, $minor) = $versionParts;
 
         $className = "WebChefs\QueueButler\Versions\Laravel{$major}_{$minor}BatchCommand";
-        if (!class_exists($className, true)) {
-            $className = BatchCommand::class;
-        }
+        return $this->resolveWithFallback($app, $className, BatchCommand::class);
 
-        return $app->make($className);
     }
 
     /**
@@ -73,11 +70,28 @@ class QueueButlerServiceProvider extends ServiceProvider
         list($major, $minor) = $versionParts;
 
         $className = "WebChefs\QueueButler\Versions\Laravel{$major}_{$minor}BatchRunner";
-        if (!class_exists($className, true)) {
-            $className = BatchRunner::class;
+        return $this->resolveWithFallback($app, $className, BatchRunner::class);
+    }
+
+    /**
+     * Resolve for a class, but if it fails use the fallback.
+     *
+     * WARNING, errors are silently dropped
+     */
+    protected function resolveWithFallback($app, $class, $fallback)
+    {
+        // Try first choice
+        try {
+            if (class_exists($class, true)) {
+                return $app->make($class);
+            }
+        }
+        catch(\Exception $e) {
+            // Ignore Auto Loader Exceptions
         }
 
-        return $app->make($className);
+        // Use fallback / second choice
+        return $app->make($fallback);
     }
 
 }
