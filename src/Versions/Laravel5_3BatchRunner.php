@@ -1,14 +1,16 @@
 <?php
 
-namespace WebChefs\QueueButler;
+namespace WebChefs\QueueButler\Versions;
 
 // Package
 use WebChefs\QueueButler\Contracts\AbstractBatchRunner;
+use WebChefs\QueueButler\Contracts\IsVersionSmartBatchRunner;
 
 // Framework
 use Illuminate\Queue\WorkerOptions;
 
-class BatchRunner extends AbstractBatchRunner
+class Laravel5_3BatchRunner extends Worker
+                         implements IsVersionSmartBatchRunner
 {
 
     /**
@@ -29,16 +31,12 @@ class BatchRunner extends AbstractBatchRunner
     /**
      * Determine if the batch should process on this iteration.
      *
-     * @param  \Illuminate\Queue\WorkerOptions  $options
-     * @param  string  $connectionName
-     * @param  string  $queue
-     *
      * @return bool
      */
-    protected function daemonShouldRun(WorkerOptions $options, $connectionName, $queue)
+    protected function daemonShouldRun(WorkerOptions $options)
     {
         $this->checkLimits();
-        return parent::daemonShouldRun($options, $connectionName, $queue);
+        return parent::daemonShouldRun($options);
     }
 
     /**
@@ -54,5 +52,4 @@ class BatchRunner extends AbstractBatchRunner
         parent::raiseAfterJobEvent($connectionName, $job);
         $this->checkLimits();
     }
-
 }
