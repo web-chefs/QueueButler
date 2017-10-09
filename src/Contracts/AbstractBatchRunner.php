@@ -74,31 +74,6 @@ abstract class AbstractBatchRunner extends Worker
     abstract protected function runDaemon($connectionName, $queue, BatchOptions $options);
 
     /**
-     * Determine if the batch should process on this iteration.
-     *
-     * @return bool
-     */
-    protected function daemonShouldRun()
-    {
-        $this->checkLimits();
-        return parent::daemonShouldRun();
-    }
-
-    /**
-     * Raise the after queue job event.
-     *
-     * @param  string  $connectionName
-     * @param  \Illuminate\Contracts\Queue\Job  $job
-     * @return void
-     */
-    protected function raiseAfterJobEvent($connectionName, Job $job)
-    {
-        $this->jobCount++;
-        parent::raiseAfterJobEvent($connectionName, $job);
-        $this->checkLimits();
-    }
-
-    /**
      * Stop the process if necessary.
      *
      * @param  WorkerOptions  $options

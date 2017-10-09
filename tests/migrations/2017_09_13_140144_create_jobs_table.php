@@ -19,7 +19,7 @@ class CreateJobsTable extends Migration
             $table->longText('payload');
             $table->tinyInteger('attempts')->unsigned();
             // Required for <= Laravel 5.2
-            $table->tinyInteger('reserved')->unsigned();
+            $table->tinyInteger('reserved')->unsigned()->nullable();
             $table->unsignedInteger('reserved_at')->nullable();
             $table->unsignedInteger('available_at');
             $table->unsignedInteger('created_at');

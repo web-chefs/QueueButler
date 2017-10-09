@@ -48,4 +48,30 @@ class Laravel5_2BatchRunner extends AbstractBatchRunner
                       $options->maxTries);
     }
 
+    /**
+     * Determine if the batch should process on this iteration.
+     *
+     * @return bool
+     */
+    protected function daemonShouldRun()
+    {
+        $this->checkLimits();
+        return parent::daemonShouldRun();
+    }
+
+    /**
+     * Raise the after queue job event.
+     *
+     * @param  string  $connectionName
+     * @param  \Illuminate\Contracts\Queue\Job  $job
+     * @return void
+     */
+    protected function raiseAfterJobEvent($connectionName, Job $job)
+    {
+        $this->jobCount++;
+        parent::raiseAfterJobEvent($connectionName, $job);
+        $this->checkLimits();
+    }
+
+
 }

@@ -71,6 +71,13 @@ class BatchOptions
     public $jobLimit;
 
     /**
+     * For compatibility were are able to conditionally pass Laravels own worker
+     * options to itself using BatchOptions
+     * @var WorkerOptions
+     */
+    public $workerOptions;
+
+    /**
      * Create a new worker options instance.
      *
      * @param  int  $delay
@@ -101,6 +108,16 @@ class BatchOptions
         // Add our options
         $this->timeLimit = $timeLimit;
         $this->jobLimit  = $jobLimit;
+
+        $workOptions = \Illuminate\Queue\WorkerOptions::class;
+        if (class_exists($workOptions, true)) {
+            $this->workerOptions = new $workOptions($delay,
+                                                    $memory,
+                                                    $timeout,
+                                                    $sleep,
+                                                    $maxTries,
+                                                    $force);
+        }
     }
 
 }
