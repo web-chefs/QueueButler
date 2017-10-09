@@ -13,7 +13,6 @@ use WebChefs\QueueButler\Contracts\IsVersionSmartBatchRunner;
 // Framework
 use Illuminate\Queue\Worker;
 use Illuminate\Queue\WorkerOptions;
-use Illuminate\Contracts\Queue\Job;
 
 abstract class AbstractBatchRunner extends Worker
                                 implements IsVersionSmartBatchRunner

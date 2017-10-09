@@ -8,6 +8,8 @@ use WebChefs\QueueButler\BatchOptions;
 use WebChefs\QueueButler\Contracts\AbstractBatchRunner;
 // use WebChefs\QueueButler\Contracts\IsVersionSmartBatchRunner;
 
+// Framework
+use Illuminate\Contracts\Queue\Job;
 
 class Laravel5_2BatchRunner extends AbstractBatchRunner
 {
