@@ -3,9 +3,9 @@
 namespace WebChefs\QueueButler\Versions;
 
 // Package
-use WebChefs\QueueButler\BatchRunner;
+use WebChefs\QueueButler\Contracts\AbstractBatchCommand;
 
-class Laravel5_xBatchCommand extends BatchRunner
+class Laravel5_xBatchCommand extends AbstractBatchCommand
 {
     // 5.x modifications
 }

@@ -1,14 +1,11 @@
 <?php
 
-namespace WebChefs\QueueButler;
+namespace WebChefs\QueueButler\Versions;
 
 // Package
-// use WebChefs\QueueButler\BatchRunner;
-use WebChefs\QueueButler\BatchOptions;
 use WebChefs\QueueButler\Contracts\AbstractBatchCommand;
-use WebChefs\QueueButler\Contracts\IsVersionSmartBatchRunner;
 
-class BatchCommand extends AbstractBatchCommand
+class Laravel5_2BatchCommand extends AbstractBatchCommand
 {
 
     /**
@@ -27,15 +24,20 @@ class BatchCommand extends AbstractBatchCommand
         // which jobs are coming through a queue and be informed on its progress.
         $this->listenForEvents();
 
-        $connection = $this->argument('connection')
-                        ?: $this->laravel['config']['queue.default'];
+        $queue = $this->option('queue');
 
-        // We need to get the right queue for the connection which is set in the queue
-        // configuration file for the application. We will pull it based on the set
-        // connection being run for the queue operation currently being executed.
-        $queue = $this->getQueue($connection);
+        $delay = $this->option('delay');
 
-        $this->runWorker($connection, $queue);
+        // The memory limit is the amount of memory we will allow the script to occupy
+        // before killing it and letting a process manager restart it for us, which
+        // is to protect us against any memory leaks that will be in the scripts.
+        $memory = $this->option('memory');
+
+        $connection = $this->argument('connection');
+
+        $this->runWorker(
+            $connection, $queue, $delay, $memory
+        );
     }
 
     /**
@@ -43,9 +45,12 @@ class BatchCommand extends AbstractBatchCommand
      *
      * @param  string  $connection
      * @param  string  $queue
+     * @param  int  $delay
+     * @param  int  $memory
+     * @param  bool  $daemon
      * @return array
      */
-    protected function runWorker($connection, $queue)
+    protected function runWorker($connection, $queue, $delay, $memory, $daemon = false)
     {
         $this->worker->setCache($this->laravel['cache']->driver());
         return $this->worker->batch( $connection, $queue, $this->gatherWorkerOptions() );

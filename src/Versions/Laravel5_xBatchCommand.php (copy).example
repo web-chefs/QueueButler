@@ -1,0 +1,11 @@
+<?php
+
+namespace WebChefs\QueueButler\Versions;
+
+// Package
+use WebChefs\QueueButler\BatchCommand;
+
+class Laravel5_xBatchCommand extends BatchCommand
+{
+    // 5.x modifications
+}

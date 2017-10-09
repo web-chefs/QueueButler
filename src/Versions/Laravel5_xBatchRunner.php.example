@@ -1,0 +1,28 @@
+<?php
+
+namespace WebChefs\QueueButler\Versions;
+
+// Package
+// use WebChefs\QueueButler\BatchRunner;
+use WebChefs\QueueButler\Contracts\IsVersionSmartBatchRunner;
+
+// Framework
+use Illuminate\Queue\Worker;
+
+class Laravel5_xBatchRunner extends Worker
+                         implements IsVersionSmartBatchRunner
+{
+
+    /**
+     * Run parent daemon withe the correct args for Laravel version.
+     *
+     * @param  string       $connectionName
+     * @param  string       $queue
+     * @param  BatchOptions $options
+     *
+     * @return void
+     * @throws Exception|StopBatch
+     */
+    abstract protected function runDaemon($connectionName, $queue, BatchOptions $options);
+
+}

@@ -9,7 +9,8 @@ use DomainException;
 // Package
 use WebChefs\QueueButler\BatchRunner;
 use WebChefs\QueueButler\BatchCommand;
-use WebChefs\QueueButler\Versions\Contracts\IsVersionSmartBatchRunner;
+use WebChefs\QueueButler\Contracts\IsVersionSmartBatchRunner;
+use WebChefs\QueueButler\Contracts\IsVersionSmartBatchCommand;
 
 // Framework
 use Illuminate\Support\ServiceProvider;
@@ -18,7 +19,7 @@ class QueueButlerServiceProvider extends ServiceProvider
 {
 
     protected $commands = [
-        BatchCommand::class,
+        IsVersionSmartBatchCommand::class,
     ];
 
     /**
@@ -30,9 +31,33 @@ class QueueButlerServiceProvider extends ServiceProvider
     {
         $this->commands($this->commands);
 
+        $this->app->bind(IsVersionSmartBatchCommand::class, function ($app) {
+            return $this->resolveCommandVersion($app);
+        });
+
         $this->app->bind(IsVersionSmartBatchRunner::class, function ($app) {
             return $this->resolveWorkerVersion($app);
         });
+    }
+
+    /**
+     * Resolve the relevant BatchWorker child class for this laravel version.
+     *
+     * @param  \Illuminate\Contracts\Foundation\Application $app
+     *
+     * @return BatchCommand
+     */
+    protected function resolveCommandVersion($app)
+    {
+        $versionParts = explode('.', $app::VERSION);
+        list($major, $minor) = $versionParts;
+
+        $className = "WebChefs\QueueButler\Versions\Laravel{$major}_{$minor}BatchCommand";
+        if (!class_exists($className, true)) {
+            $className = BatchCommand::class;
+        }
+
+        return $app->make($className);
     }
 
     /**
@@ -47,8 +72,8 @@ class QueueButlerServiceProvider extends ServiceProvider
         $versionParts = explode('.', $app::VERSION);
         list($major, $minor) = $versionParts;
 
-        $className = "WebChefs\QueueButler\Versions\Laravel{$major}_{$minor}BatchCommand";
-        if (!class_exists($className, false)) {
+        $className = "WebChefs\QueueButler\Versions\Laravel{$major}_{$minor}BatchRunner";
+        if (!class_exists($className, true)) {
             $className = BatchRunner::class;
         }
 

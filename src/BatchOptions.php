@@ -2,11 +2,60 @@
 
 namespace WebChefs\QueueButler;
 
-// Framework
-use Illuminate\Queue\WorkerOptions;
-
-class BatchOptions extends WorkerOptions
+class BatchOptions
 {
+
+    /*
+     |--------------------------------------------------------------------------
+     | Taken from Illuminate\Queue\WorkerOptions > 5.3
+     |--------------------------------------------------------------------------
+     */
+
+    /**
+     * The number of seconds before a released job will be available.
+     *
+     * @var int
+     */
+    public $delay;
+
+    /**
+     * The maximum amount of RAM the worker may consume.
+     *
+     * @var int
+     */
+    public $memory;
+
+    /**
+     * The maximum number of seconds a child worker may run.
+     *
+     * @var int
+     */
+    public $timeout;
+
+    /**
+     * The number of seconds to wait in between polling the queue.
+     *
+     * @var int
+     */
+    public $sleep;
+
+    /**
+     * The maximum amount of times a job may be attempted.
+     *
+     * @var int
+     */
+    public $maxTries;
+
+    /**
+     * Indicates if the worker should run in maintenance mode.
+     *
+     * @var bool
+     */
+    public $force;
+
+    /**
+     |--------------------------------------------------------------------------
+     */
 
     /**
      * The maximum number of seconds a batch should run for.
@@ -42,8 +91,14 @@ class BatchOptions extends WorkerOptions
                                 $timeLimit = 60,
                                 $jobLimit = 100)
     {
-        parent::__construct($delay, $memory, $timeout, $sleep, $maxTries, $force);
+        $this->delay    = $delay;
+        $this->sleep    = $sleep;
+        $this->force    = $force;
+        $this->memory   = $memory;
+        $this->timeout  = $timeout;
+        $this->maxTries = $maxTries;
 
+        // Add our options
         $this->timeLimit = $timeLimit;
         $this->jobLimit  = $jobLimit;
     }

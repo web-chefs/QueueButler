@@ -1,6 +1,6 @@
 <?php
 
-namespace WebChefs\QueueButler\Versions\Contracts;
+namespace WebChefs\QueueButler\Contracts;
 
 interface IsVersionSmartBatchRunner
 {
