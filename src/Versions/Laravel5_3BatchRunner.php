@@ -3,14 +3,13 @@
 namespace WebChefs\QueueButler\Versions;
 
 // Package
+use WebChefs\QueueButler\BatchOptions;
 use WebChefs\QueueButler\Contracts\AbstractBatchRunner;
-use WebChefs\QueueButler\Contracts\IsVersionSmartBatchRunner;
 
 // Framework
 use Illuminate\Queue\WorkerOptions;
 
-class Laravel5_3BatchRunner extends Worker
-                         implements IsVersionSmartBatchRunner
+class Laravel5_3BatchRunner extends AbstractBatchRunner
 {
 
     /**
