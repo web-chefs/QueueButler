@@ -48,33 +48,6 @@ class BatchRunner extends Worker
     }
 
     /**
-     * Process the given job.
-     *
-     * @param  \Illuminate\Contracts\Queue\Job  $job
-     * @param  string  $connectionName
-     * @param  \Illuminate\Queue\WorkerOptions  $options
-     * @return void
-     */
-    protected function runJob($job, $connectionName, WorkerOptions $options)
-    {
-        $this->validOptions($options);
-
-        parent::runJob($job, $connectionName, $options);
-        $this->jobCount++;
-    }
-
-    /**
-     * Determine if the batch should process on this iteration.
-     *
-     * @return bool
-     */
-    protected function daemonShouldRun(WorkerOptions $options)
-    {
-        $this->checkLimits();
-        return parent::daemonShouldRun($options);
-    }
-
-    /**
      * Raise the after queue job event.
      *
      * @param  string  $connectionName
@@ -157,17 +130,6 @@ class BatchRunner extends Worker
     protected function isJobLimit($jobLimit)
     {
         return $this->jobCount >= $jobLimit;
-    }
-
-    /**
-     * Use type hinting for validation were we cant change method argument
-     * types of parent.
-     *
-     * @param  BatchOptions $options
-     */
-    protected function validOptions(BatchOptions $options)
-    {
-        // Should be empty.
     }
 
 }
