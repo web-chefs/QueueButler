@@ -10,7 +10,11 @@ This is ideal for shared hosting or situations where you are not fully in contro
 
 ## Versions
 
-Developed and tested on Laravel 5.4 using PHP 5.6. Should work on older versions, if you successfully test and use the package on another version of Laravel and PHP, please let us know using the issue tracker and we will give you credit and list it here.
+__Confirmed to be working:__
+
+* Laravel 5.3
+* Laravel 5.4
+* Laravel 5.5
 
 ## Install
 
