@@ -3,6 +3,9 @@
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![Total Downloads][ico-downloads]][link-downloads]
+[![Build Status][ico-travis]][link-travis]
+[![Coverage Status][ico-scrutinizer]][link-scrutinizer]
+[![Quality Score][ico-code-quality]][link-code-quality]
 
 Laravel Artisan commands that make it easy to run job queues using the Scheduler without the need for installing for running the Queue Daemon or installing Supervisor.
 
@@ -91,8 +94,15 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [ico-version]: https://img.shields.io/packagist/v/web-chefs/queue-butler.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/web-chefs/queue-butler.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/:vendor/:package_name/master.svg?style=flat-square
+[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/:vendor/:package_name.svg?style=flat-square
+[ico-code-quality]: https://img.shields.io/scrutinizer/g/:vendor/:package_name.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/web-chefs/queue-butler
+[link-travis]: https://travis-ci.org/:vendor/:package_name
+[link-scrutinizer]: https://scrutinizer-ci.com/g/:vendor/:package_name/code-structure
+[link-code-quality]: https://scrutinizer-ci.com/g/:vendor/:package_name
+[link-downloads]: https://packagist.org/packages/:vendor/:package_name
 [link-downloads]: https://packagist.org/packages/web-chefs/queue-butler
 [link-author]: https://github.com/JFossey
 [link-contributors]: ../../contributors
