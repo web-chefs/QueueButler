@@ -27,7 +27,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "WebChefs\\QueueButler\\": "tests"
+            "WebChefs\\QueueButler\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -42,7 +42,7 @@
             ]
         },
         "branch-alias": {
-            "dev-master": "1.0-dev"
+            "dev-master": "master"
         }
     },
     "config": {
