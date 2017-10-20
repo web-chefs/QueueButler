@@ -1,12 +1,6 @@
 dist: trusty
 language: php
 
-php:
-  - 5.6
-  - 7.0
-  - 7.1
-  - hhvm
-
 # This triggers builds to run on the new TravisCI infrastructure.
 # See: http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 sudo: false
@@ -22,8 +16,6 @@ matrix:
       env: ILLUMINATE_VERSION=5.3.*
     - php: 5.6
       env: ILLUMINATE_VERSION=5.4.*
-    - php: 5.6
-      env: ILLUMINATE_VERSION=5.5.*
     - php: 7.0
       env: ILLUMINATE_VERSION=5.3.*
     - php: 7.0
