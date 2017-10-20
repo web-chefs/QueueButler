@@ -40,9 +40,6 @@
             "providers": [
                 "WebChefs\\QueueButler\\QueueButlerServiceProvider"
             ]
-        },
-        "branch-alias": {
-            "dev-master": "master"
         }
     },
     "config": {
