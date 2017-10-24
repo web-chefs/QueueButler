@@ -56,16 +56,36 @@ Run batch every minute for 50 seconds or 100 jobs in the background using `runIn
 Prevent overlapping batches running simultaneously with `withoutOverlapping()`.
 
 ``` php
-        $schedule->command('queue:batch --queue=default,something,somethingelse --time-limit=50 --job-limit=100')
-                 ->everyMinute()
-                 ->runInBackground()
-                 ->withoutOverlapping();
+$schedule->command('queue:batch --queue=default,something,somethingelse --time-limit=50 --job-limit=100')
+         ->everyMinute()
+         ->runInBackground()
+         ->withoutOverlapping();
 ```
 If your application is processing a large number of jobs for multiple queues, it is recommended setting up different batch scheduler commands per queue.
 
 Because job queue processing is a long running process setting `runInBackground()` is highly recommended, else each `queue:batch` command will hold up all scheduled preceding items setup to run after it.
 
 The Scheduler requires a __Cron__ to be setup. See [Laravel documentation](https://laravel.com/docs/master/scheduling) for details how the Scheduler works.
+
+__`withoutOverlapping()` and Mutex cache expiry__
+
+When using `withoutOverlapping()` a cache Mutex is used to keep track of running jobs. The default cache expiry is 1440 minutes (24 hours).
+
+If your batch process is interrupted the scheduler will ignore the task for the time of the expiry and you will have no jobs processing for 24 hours. The only way to resolve this is to clear the cache or manually remove the batch processes cache entry.
+
+To prevent long running cache expiries it is advised to match your cache cache expiry time with your task frequency.
+
+```php
+// Create Batch Job Queue Processor Task
+$scheduledEvent = $schedule->command('queue:batch --queue=default,something,somethingelse --time-limit=55 --job-limit=100');
+
+// Match cache expiry with frequency
+// Set cache mutex expiry to One min (default is 1440)
+$scheduledEvent->expiresAt = 1;
+$scheduledEvent->everyMinute()
+               ->withoutOverlapping()
+               ->runInBackground();
+```
 
 ## Standards
 
