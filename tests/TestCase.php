@@ -45,7 +45,7 @@ abstract class TestCase extends LaravelTestCase
         // If we are running in a automated build try and include the
         // application from vendor
         catch(Exception $e) {
-            $this->writeBuildConfig();
+            $this->writeBuildConfig(__DIR__);
             $this->app = require $this->getVendorAppPath(__DIR__);
         }
 
@@ -132,7 +132,7 @@ abstract class TestCase extends LaravelTestCase
      *
      * @return string
      */
-    protected function getVendorAppConfig()
+    protected function getVendorAppConfig($basePath)
     {
         return $this->makePath($basePath, array_merge($this->getVendorAppRoot(), ['config', 'app.php']));
     }
@@ -160,7 +160,7 @@ abstract class TestCase extends LaravelTestCase
      */
     protected function writeBuildConfig($basePath)
     {
-        $configPath = $this->getVendorAppConfig();
+        $configPath = $this->getVendorAppConfig($basePath);
 
         if (! is_writable($configPath)) {
             throw new Exception('The config/app.php file must be present and writable.');
