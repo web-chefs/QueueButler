@@ -7,6 +7,7 @@ use Exception;
 use DomainException;
 
 // Package
+use WebChefs\QueueButler\QueueButlerServiceProvider;
 use WebChefs\QueueButler\Tests\Concerns\TestsQueueDb;
 
 // Framework
@@ -147,7 +148,7 @@ abstract class TestCase extends LaravelTestCase
     protected function buildAppConfig($configPath)
     {
         $config = require($configPath);
-        $config['providers'][] = WebChefs\QueueButler\QueueButlerServiceProvider::class;
+        $config['providers'][] = QueueButlerServiceProvider::class;
         return $config;
     }
 
