@@ -43,7 +43,7 @@ abstract class TestCase extends LaravelTestCase
         }
         // If we are running in a automated build try and include the
         // application from vendor
-        catch(Exception $e)
+        catch(Exception $e) {
             $this->app = require $this->getVendorAppPath(__DIR__);
         }
 
