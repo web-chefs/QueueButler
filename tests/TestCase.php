@@ -3,6 +3,7 @@
 namespace WebChefs\QueueButler\Tests;
 
 // PHP
+use Exception;
 use DomainException;
 
 // Package
