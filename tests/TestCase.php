@@ -65,6 +65,7 @@ abstract class TestCase extends LaravelTestCase
     protected function getVendorAppPath($path)
     {
         return $path . DIRECTORY_SEPARATOR . join(DIRECTORY_SEPARATOR, [
+            '..',
             'vendor',
             'laravel',
             'laravel',
