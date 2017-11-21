@@ -37,11 +37,39 @@ abstract class TestCase extends LaravelTestCase
         $this->testEnvPath = __DIR__;
         $this->setUpTraitEnv();
 
-        $this->app = require $this->discoverApp(__DIR__);
+        // If we are running in a automated build try and include the
+        // application from vendor
+        if (file_exists($this->getVendorAppPath(__DIR__))) {
+            $this->app = require $this->getVendorAppPath(__DIR__);
+        }
+        // If we are in a laravel project try and discover the application
+        else {
+            $this->app = require $this->discoverApp(__DIR__);
+        }
 
         $this->app->make(Kernel::class)->bootstrap();
 
         return $app;
+    }
+
+    /**
+     * Build a path to boostrap/app.php assuming laravel/laravel is a package
+     * under vendor. This will only be the case in automated builds for testing
+     * purposes.
+     *
+     * @param  string $path "__DIR__ . '/vendor/laravel/laravel/bootstrap/app.php'"
+     *
+     * @return string
+     */
+    protected function getVendorAppPath($path)
+    {
+        return $path . DIRECTORY_SEPARATOR . join(DIRECTORY_SEPARATOR, [
+            'vendor',
+            'laravel',
+            'laravel',
+            'bootstrap',
+            'app.php',
+        ]);
     }
 
     /**
@@ -63,11 +91,11 @@ abstract class TestCase extends LaravelTestCase
         }
 
         // Go up a level
-        $path = dirname($path, 1);
+        $path = dirname($path);
 
         // Check if we have reached the end
         if ($path == '.' || $path == DIRECTORY_SEPARATOR) {
-            throw new DomainException('Lravel "bootstramp/app.php" could not be discovered.');
+            throw new DomainException('Laravel "bootstramp/app.php" could not be discovered.');
         }
 
         // Try again (recursive)
