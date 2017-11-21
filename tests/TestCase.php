@@ -45,12 +45,41 @@ abstract class TestCase extends LaravelTestCase
         // If we are running in a automated build try and include the
         // application from vendor
         catch(Exception $e) {
+            $this->writeBuildConfig();
             $this->app = require $this->getVendorAppPath(__DIR__);
         }
 
         $this->app->make(Kernel::class)->bootstrap();
 
         return $app;
+    }
+
+    /**
+     * Join an array and base bath correctly as a file system path.
+     *
+     * @param  string $basePath
+     * @param  array  $pathParts
+     *
+     * @return string
+     */
+    protected function makePath($basePath, $pathParts)
+    {
+        return $basePath . DIRECTORY_SEPARATOR . join(DIRECTORY_SEPARATOR, $pathParts);
+    }
+
+    /**
+     * Return the parts that should lead to the laravel route found in vendor.
+     *
+     * @return array
+     */
+    protected function getVendorAppRoot()
+    {
+        return [
+            '..',
+            'vendor',
+            'laravel',
+            'laravel',
+        ];
     }
 
     /**
@@ -64,14 +93,7 @@ abstract class TestCase extends LaravelTestCase
      */
     protected function getVendorAppPath($path)
     {
-        return $path . DIRECTORY_SEPARATOR . join(DIRECTORY_SEPARATOR, [
-            '..',
-            'vendor',
-            'laravel',
-            'laravel',
-            'bootstrap',
-            'app.php',
-        ]);
+        return $this->makePath($path, array_merge($this->getVendorAppRoot(), ['bootstrap', 'app.php']));
     }
 
     /**
@@ -102,6 +124,51 @@ abstract class TestCase extends LaravelTestCase
 
         // Try again (recursive)
         return $this->discoverApp($path);
+    }
+
+    /**
+     * Build the path to config/app.php when laravel is in vendor and we are
+     * running in an automated travis build.
+     *
+     * @return string
+     */
+    protected function getVendorAppConfig()
+    {
+        return $this->makePath($basePath, array_merge($this->getVendorAppRoot(), ['config', 'app.php']));
+    }
+
+    /**
+     * Include and add our Service Provider to the App config.
+     *
+     * @param  string $configPath
+     *
+     * @return array
+     */
+    protected function buildAppConfig($configPath)
+    {
+        $config = require($configPath);
+        $config['providers'][] = WebChefs\QueueButler\QueueButlerServiceProvider::class;
+        return $config;
+    }
+
+    /**
+     * Update the vendor location of config/app.php include our service provider
+     *
+     * @param  string $basePath
+     *
+     * @return void
+     */
+    protected function writeBuildConfig($basePath)
+    {
+        $configPath = $this->getVendorAppConfig();
+
+        if (! is_writable($configPath)) {
+            throw new Exception('The config/app.php file must be present and writable.');
+        }
+
+        $config = $this->buildAppConfig($configPath);
+
+        file_put_contents($configPath, '<?php return '.var_export($config, true).';');
     }
 
     /**
