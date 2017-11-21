@@ -37,14 +37,14 @@ abstract class TestCase extends LaravelTestCase
         $this->testEnvPath = __DIR__;
         $this->setUpTraitEnv();
 
+        // If we are in a laravel project try and discover the application
+        try {
+            $this->app = require $this->discoverApp(__DIR__);
+        }
         // If we are running in a automated build try and include the
         // application from vendor
-        if (file_exists($this->getVendorAppPath(__DIR__))) {
+        catch(Exception $e)
             $this->app = require $this->getVendorAppPath(__DIR__);
-        }
-        // If we are in a laravel project try and discover the application
-        else {
-            $this->app = require $this->discoverApp(__DIR__);
         }
 
         $this->app->make(Kernel::class)->bootstrap();
