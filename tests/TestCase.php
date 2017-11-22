@@ -194,6 +194,7 @@ abstract class TestCase extends LaravelTestCase
      */
     protected function setUpTraits()
     {
+        echo '===========setUpTraits';
         $uses = array_flip(class_uses_recursive(static::class));
 
         if (isset($uses[TestsQueueDb::class])) {
