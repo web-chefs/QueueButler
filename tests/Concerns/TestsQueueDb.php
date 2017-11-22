@@ -48,6 +48,7 @@ trait TestsQueueDb
     {
         // Modify config
         $config = $this->app->make('config');
+        print_r($config);
         $this->queueTestDb_dbConfig($config);
         $this->queueTestDb_queueConfig($config);
 
