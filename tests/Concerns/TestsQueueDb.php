@@ -48,9 +48,14 @@ trait TestsQueueDb
     {
         // Modify config
         $config = $this->app->make('config');
-        print_r($config);
         $this->queueTestDb_dbConfig($config);
         $this->queueTestDb_queueConfig($config);
+
+        echo "\n";
+        print_r($config->get('database'));
+        echo "\n";
+        print_r($config->get('queue'));
+        echo "\n";
 
         // Run our migrations
         $dbPath = $this->app->databasePath();
@@ -64,7 +69,7 @@ trait TestsQueueDb
      *
      * @param \Illuminate\Config\Repository $config
      */
-    protected function queueTestDb_dbConfig($config)
+    protected function queueTestDb_dbConfig(&$config)
     {
         // Setup test DB
         $config->set('database.connections.' . $this->queueTestDbName(), [
@@ -80,7 +85,7 @@ trait TestsQueueDb
      *
      * @param \Illuminate\Config\Repository $config
      */
-    protected function queueTestDb_queueConfig($config)
+    protected function queueTestDb_queueConfig(&$config)
     {
         $config->set('queue.connections.' . $this->queueTestDbName(), [
             'driver'      => 'database',
