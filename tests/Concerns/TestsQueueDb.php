@@ -65,7 +65,7 @@ trait TestsQueueDb
         echo "\n";
 
         $this->app->useDatabasePath($this->testEnvPath);
-        $this->artisan('migrate:refresh');
+        $this->artisan('migrate:refresh', [ '--force' => 1 ]);
         $this->app->useDatabasePath($dbPath);
     }
 
