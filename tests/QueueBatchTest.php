@@ -47,9 +47,7 @@ class QueueBatchTest extends TestCase
      */
     public function testBatch()
     {
-        $tables = \DB::connection()->getDoctrineSchemaManager()->listTableNames();
-        print_r($tables);
-        print_r(\DB::connection()->getName());
+        // $tables = \DB::connection()->getDoctrineSchemaManager()->listTableNames();
 
         // Setup Job testing Application Bindings
         $this->setupJobAnswerToken();

@@ -50,7 +50,6 @@ abstract class TestCase extends LaravelTestCase
             $this->app = require $this->getVendorAppPath(__DIR__);
         }
 
-        print_r($this->app->path());
         $this->app->make(Kernel::class)->bootstrap();
 
         return $app;

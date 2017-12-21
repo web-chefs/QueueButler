@@ -53,17 +53,6 @@ trait TestsQueueDb
 
         // Run our migrations
         $dbPath = $this->app->databasePath();
-
-        echo "\n";
-        print_r($config->get('database'));
-        echo "\n";
-        print_r($config->get('queue'));
-        echo "\n";
-        print_r($dbPath);
-        echo "\n";
-        print_r($this->testEnvPath);
-        echo "\n";
-
         $this->app->useDatabasePath($this->testEnvPath);
         $this->artisan('migrate:refresh', [ '--force' => 1 ]);
         $this->app->useDatabasePath($dbPath);
