@@ -19,7 +19,8 @@
     "require-dev": {
         "phpunit/phpunit": "~5.7",
         "squizlabs/php_codesniffer": "^2.3",
-        "doctrine/dbal": "^2.5"
+        "doctrine/dbal": "^2.5",
+        "web-chefs/laravel-app-spawn": "^1.0"
     },
     "autoload": {
         "psr-4": {

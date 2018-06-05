@@ -3,24 +3,69 @@
 namespace WebChefs\QueueButler\Tests;
 
 // Package
-use WebChefs\QueueButler\Tests\TestCase;
+use WebChefs\LaraAppSpawn\ApplicationResolver;
+use WebChefs\QueueButler\QueueButlerServiceProvider;
 use WebChefs\QueueButler\Tests\Jobs\QueueBatchTestJob;
 
 // Framework
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Foundation\Testing\TestCase;
 
 // Aliases
-// use DB;
+use DB;
 use Queue;
 
 class QueueBatchTest extends TestCase
 {
-    use Concerns\TestsQueueDb;
-
     /**
      * @var string
      */
     protected $answerToken;
+
+    /**
+     * @var string
+     */
+    protected $connectionName = 'queue_batch_test';
+
+    /**
+     * Creates the application.
+     *
+     * @return \Illuminate\Foundation\Application
+     */
+    public function createApplication()
+    {
+        // Build Resolver config
+        $config = ApplicationResolver::defaultConfig();
+        Arr::set($config, 'database.connection', $this->connectionName);
+        Arr::set($config, 'queue.connection', $this->connectionName);
+
+        // Add our service provider to vendor builds
+        $callback = function(array $config) {
+            $config['providers'][] = QueueButlerServiceProvider::class;
+            return $config;
+        };
+        Arr::set($config, 'callback.vendor_config', $callback);
+
+        // Resolve Application
+        $resolver  = ApplicationResolver::makeApp(__DIR__, $config);
+        $this->app = $resolver->app();
+
+        // Run our database migrations
+        $this->artisan('migrate:refresh', [ '--force' => 1 ]);
+
+        return $this->app;
+    }
+
+    /**
+     * Build a test Db to query to jobs table.
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    protected function queueTestDbQuery()
+    {
+        return DB::table('jobs');
+    }
 
     /**
      * Test our test queue was setup correctly and and is empty.
@@ -33,7 +78,7 @@ class QueueBatchTest extends TestCase
         $this->assertEquals($queue->count(), 0);
 
         // Check our queues are setup is using our in memory database
-        $this->assertEquals(Queue::getName(), $this->queueTestDbName());
+        $this->assertEquals(Queue::getName(), $this->connectionName);
     }
 
     /**
