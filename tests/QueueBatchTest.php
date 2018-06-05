@@ -4,6 +4,7 @@ namespace WebChefs\QueueButler\Tests;
 
 // Package
 use WebChefs\LaraAppSpawn\ApplicationResolver;
+use WebChefs\QueueButler\QueueButlerServiceProvider;
 use WebChefs\QueueButler\Tests\Jobs\QueueBatchTestJob;
 
 // Framework
@@ -38,6 +39,13 @@ class QueueBatchTest extends TestCase
         $config = ApplicationResolver::defaultConfig();
         Arr::set($config, 'database.connection', $this->connectionName);
         Arr::set($config, 'queue.connection', $this->connectionName);
+
+        // Add our service provider to vendor builds
+        $callback = function(array $config) {
+            $config['providers'][] = QueueButlerServiceProvider::class;
+            return $config;
+        };
+        Arr::set($config, 'callback.vendor_config', $callback);
 
         // Resolve Application
         $resolver  = ApplicationResolver::makeApp(__DIR__, $config);
