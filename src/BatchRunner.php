@@ -36,14 +36,25 @@ class BatchRunner extends Worker
         $this->options   = $options;
         $this->startTime = microtime(true);
         $this->jobCount  = 0;
+        $this->daemon($connectionName, $queue, $options);
+    }
 
+    /**
+     * Listen to the given queue in a loop.
+     *
+     * @param  string  $connectionName
+     * @param  string  $queue
+     * @param  \Illuminate\Queue\WorkerOptions  $options
+     * @return void
+     */
+    public function daemon($connectionName, $queue, WorkerOptions $options)
+    {
         try {
-           $this->daemon($connectionName, $queue, $options);
+           parent::daemon($connectionName, $queue, $options);
         }
-        catch (StopBatch $excption) {
+        catch (StopBatch $e) {
             // Check if the batch was cleanly stopped
-            // The batch hit a limit
-            return;
+            // Then do nothing
         }
     }
 
