@@ -16,6 +16,7 @@ __Confirmed to be working:__
 * Laravel 5.3
 * Laravel 5.4
 * Laravel 5.5
+* Laravel 5.6
 
 ## Install
 
