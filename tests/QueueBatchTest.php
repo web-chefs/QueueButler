@@ -135,7 +135,7 @@ class QueueBatchTest extends TestCase
         $queue = $this->queueTestDbQuery();
 
         // Create 5 test jobs
-        collect(5)->each(function() {
+        collect(range(0,4))->each(function() {
             dispatch(new QueueBatchTestJob);
         });
 
