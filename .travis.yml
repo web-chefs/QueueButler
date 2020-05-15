@@ -43,7 +43,7 @@ before_install:
 
 # install dependencies and build
 install:
-  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer update --prefer-source --no-interaction
+  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer update --prefer-source --no-interaction --dev
 
 script:
    - composer test
