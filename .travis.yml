@@ -39,6 +39,7 @@ matrix:
 before_install:
   - composer require "laravel/framework:${ILLUMINATE_VERSION}" --no-update
   - composer require "laravel/laravel:${ILLUMINATE_VERSION}" --no-update
+  - composer require mockery/mockery --dev
   # composer create-project laravel/laravel
 
 # install dependencies and build
