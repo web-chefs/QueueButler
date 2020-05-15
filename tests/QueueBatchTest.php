@@ -90,15 +90,18 @@ class QueueBatchTest extends TestCase
      *
      * @return void
      */
-    public function testBatch()
+    public function testBatchSinpleQueueProcessing()
     {
         // $tables = \DB::connection()->getDoctrineSchemaManager()->listTableNames();
 
         // Setup Job testing Application Bindings
         $this->setupJobAnswerToken();
 
+        // Get a db query to our test jobs table.
         // Test our queue works and our Test job gets push on to the queue
         $queue = $this->queueTestDbQuery();
+
+        // Populated the queue with our test job
         dispatch(new QueueBatchTestJob);
         $this->assertEquals(1, $queue->count());
 
@@ -116,13 +119,51 @@ class QueueBatchTest extends TestCase
     }
 
     /**
-     * Bind Job answer to application.
+     * Test the batch queue processing with a job limit where the batch exits
+     * once the job limit is reached leaving jobs in the queue, followed by
+     * a second batch that processing the remaining jobs.
+     *
+     * @return void
+     */
+    public function testBatchMultiWithJobLimit()
+    {
+        // Setup Job testing Application Bindings
+        $this->setupJobAnswerToken();
+
+        // Get a db query to our test jobs table.
+        // Test our queue works and our Test job gets push on to the queue
+        $queue = $this->queueTestDbQuery();
+
+        // Create 5 test jobs
+        collect(5)->each(function() {
+            dispatch(new QueueBatchTestJob);
+        });
+
+        // Check the queue was populated.
+        $this->assertEquals(5, $queue->count());
+
+        // Test Job queue processing using queue:batch with job limit
+        $this->artisan('queue:batch', ['--job-limit' => 3, '--time-limit' => 5]);
+
+        // Check we have the correct number of jobs left in the queue
+        $this->assertEquals(2, $queue->count());
+
+        // Test Job queue processing the remaining jobs
+        $this->artisan('queue:batch', ['--job-limit' => 10, '--time-limit' => 5]);
+
+        // Check queue is empty
+        $this->assertEquals(0, $queue->count());
+    }
+
+    /**
+     * Bind Job answer to application container.
      *
      * @return void
      */
     protected function setupJobAnswerToken()
     {
         $this->answerToken = Str::random();
+
         app()->bind('QueueBatchRunAnswerToken', function($app) {
             return $this->answerToken;
         });
