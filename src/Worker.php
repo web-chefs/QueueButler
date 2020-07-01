@@ -7,14 +7,14 @@ namespace WebChefs\QueueButler;
  | Copied from "framework/src/Illuminate/Queue/Worker.php" on 2020/07/01
  |------------------------------------------------------------------------------
  |
- | We dont extend from Laravel directly and rather create a copy of its
- | Worker class so we can support the widest range of laravel version.
+ | We dont extend from Laravel directly as it causes compatibility issues.
+ | To over come this we rather create a copy of the latest version of the
+ | Worker class so we can support the widest range of Laravel version.
  |
  */
 
 // PHP
 use Throwable;
-
 
 // Framework
 use Illuminate\Support\Carbon;
