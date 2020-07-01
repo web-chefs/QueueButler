@@ -3,11 +3,11 @@
 namespace WebChefs\QueueButler;
 
 // Package
+use WebChefs\QueueButler\Worker;
 use WebChefs\QueueButler\BatchOptions;
 use WebChefs\QueueButler\Exceptions\StopBatch;
 
 // Framework
-use Illuminate\Queue\Worker;
 use Illuminate\Queue\WorkerOptions;
 
 class BatchRunner extends Worker
@@ -142,5 +142,4 @@ class BatchRunner extends Worker
     {
         return $this->jobCount >= $jobLimit;
     }
-
 }
