@@ -24,25 +24,22 @@ class BatchOptions extends WorkerOptions
     /**
      * Create a new worker options instance.
      *
-     * @param  int  $delay
+     * @param  string  $name
+     * @param  int  $backoff
      * @param  int  $memory
      * @param  int  $timeout
      * @param  int  $sleep
      * @param  int  $maxTries
-     * @param  bool $force
-     * @param  int  $timelimit
-     * @param  int  $jobLimit
+     * @param  bool  $force
+     * @param  bool  $stopWhenEmpty
+     * @return void
      */
-    public function __construct($delay = 0,
-                                $memory = 128,
-                                $timeout = 60,
-                                $sleep = 3,
-                                $maxTries = 0,
-                                $force = false,
-                                $timeLimit = 60,
-                                $jobLimit = 100)
+    public function __construct($name = 'default', $backoff = 0, $memory = 128, $timeout = 60, $sleep = 3, $maxTries = 1, $force = false)
     {
-        parent::__construct($delay, $memory, $timeout, $sleep, $maxTries, $force);
+        // Force options that are not compatible.
+        $stopWhenEmpty = false;
+
+        parent::__construct($name, $backoff, $memory, $timeout, $sleep, $maxTries, $force, $stopWhenEmpty);
 
         $this->timeLimit = $timeLimit;
         $this->jobLimit  = $jobLimit;
