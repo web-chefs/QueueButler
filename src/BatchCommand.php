@@ -6,14 +6,11 @@ namespace WebChefs\QueueButler;
 
 // Package
 use WebChefs\QueueButler\BatchOptions;
+use WebChefs\QueueButler\WorkCommand;
 use WebChefs\QueueButler\QueueButtlerBatchWorkerInterface;
-
-// Framework
-use Illuminate\Queue\Console\WorkCommand;
 
 class BatchCommand extends WorkCommand
 {
-
     /**
      * The console command name.
      *
