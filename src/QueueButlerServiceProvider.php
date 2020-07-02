@@ -12,7 +12,9 @@ use Illuminate\Contracts\Debug\ExceptionHandler;
 
 class QueueButlerServiceProvider extends ServiceProvider
 {
-
+    /**
+     * @var array
+     */
     protected $commands = [
         BatchCommand::class,
     ];
