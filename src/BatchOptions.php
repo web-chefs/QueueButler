@@ -42,6 +42,7 @@ class BatchOptions extends WorkerOptions
                                 $sleep = 3,
                                 $maxTries = 1,
                                 $force = false,
+                                $stopWhenEmpty = false,
                                 $timeLimit = 60,
                                 $jobLimit = 100)
     {
