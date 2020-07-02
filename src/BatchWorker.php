@@ -12,7 +12,7 @@ use WebChefs\QueueButler\Exceptions\StopBatch;
 // Framework
 use Illuminate\Queue\WorkerOptions;
 
-class BatchRunner extends Worker
+class BatchWorker extends Worker
 {
 
     /**

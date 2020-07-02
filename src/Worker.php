@@ -15,6 +15,9 @@ namespace WebChefs\QueueButler;
  |
  */
 
+// Package
+use WebChefs\QueueButler\QueueButtlerWorkerInterface;
+
 // PHP
 use Throwable;
 
@@ -32,7 +35,7 @@ use Illuminate\Database\DetectsLostConnections;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 
-class Worker
+class Worker implements QueueButtlerWorkerInterface
 {
     use DetectsLostConnections;
 

@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace WebChefs\QueueButler;
 
 // Package
-use WebChefs\QueueButler\Worker;
+use WebChefs\QueueButler\BatchWorker;
 use WebChefs\QueueButler\BatchCommand;
+use WebChefs\QueueButler\QueueButtlerWorkerInterface;
 
 // Framework
 use Illuminate\Support\ServiceProvider;
@@ -28,12 +29,12 @@ class QueueButlerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(Worker::class, function ($app) {
+        $this->app->bind(QueueButtlerWorkerInterface::class, function ($app) {
             $isDownForMaintenance = function () {
                 return $this->app->isDownForMaintenance();
             };
 
-            return new Worker(
+            return new BatchWorker(
                 $app['queue'],
                 $app['events'],
                 $app[ExceptionHandler::class],
