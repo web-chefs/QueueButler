@@ -7,7 +7,7 @@ namespace WebChefs\QueueButler;
 // Package
 use WebChefs\QueueButler\BatchWorker;
 use WebChefs\QueueButler\BatchCommand;
-use WebChefs\QueueButler\QueueButtlerWorkerInterface;
+use WebChefs\QueueButler\QueueButtlerBatchWorkerInterface;
 
 // Framework
 use Illuminate\Support\ServiceProvider;
@@ -29,7 +29,7 @@ class QueueButlerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(QueueButtlerWorkerInterface::class, function ($app) {
+        $this->app->bind(QueueButtlerBatchWorkerInterface::class, function ($app) {
             $isDownForMaintenance = function () {
                 return $this->app->isDownForMaintenance();
             };
