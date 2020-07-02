@@ -36,17 +36,6 @@ class BatchCommand extends WorkCommand
     protected $description = 'Processing jobs on the queue as single once off batch';
 
     /**
-     * Create a new queue listen command.
-     *
-     * @param  \Illuminate\Queue\Worker  $worker
-     * @return void
-     */
-    public function __construct(QueueButtlerBatchWorkerInterface $worker)
-    {
-        parent::__construct($worker);
-    }
-
-    /**
      * Execute the console command.
      *
      * @return void
