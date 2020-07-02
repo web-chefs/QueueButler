@@ -9,7 +9,6 @@ use Illuminate\Queue\WorkerOptions;
 
 class BatchOptions extends WorkerOptions
 {
-
     /**
      * The maximum number of seconds a batch should run for.
      *
@@ -36,15 +35,19 @@ class BatchOptions extends WorkerOptions
      * @param  bool  $stopWhenEmpty
      * @return void
      */
-    public function __construct($name = 'default', $backoff = 0, $memory = 128, $timeout = 60, $sleep = 3, $maxTries = 1, $force = false)
+    public function __construct($name = 'default',
+                                $backoff = 0,
+                                $memory = 128,
+                                $timeout = 60,
+                                $sleep = 3,
+                                $maxTries = 1,
+                                $force = false,
+                                $timeLimit = 60,
+                                $jobLimit = 100)
     {
-        // Force options that are not compatible.
-        $stopWhenEmpty = false;
-
         parent::__construct($name, $backoff, $memory, $timeout, $sleep, $maxTries, $force, $stopWhenEmpty);
 
         $this->timeLimit = $timeLimit;
         $this->jobLimit  = $jobLimit;
     }
-
 }
