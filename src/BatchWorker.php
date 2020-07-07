@@ -82,7 +82,7 @@ class BatchWorker extends Worker
      */
     protected function stopIfNecessary(WorkerOptions $options, $lastRestart, $job = null)
     {
-        parent::stopIfNecessary($options, $lastRestart, $job = null);
+        parent::stopIfNecessary($options, $lastRestart, $job);
         $this->checkLimits();
     }
 

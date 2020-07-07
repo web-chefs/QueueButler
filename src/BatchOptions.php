@@ -33,6 +33,9 @@ class BatchOptions extends WorkerOptions
      * @param  int  $maxTries
      * @param  bool  $force
      * @param  bool  $stopWhenEmpty
+     * @param integer $timeLimit
+     * @param integer $jobLimit
+     *
      * @return void
      */
     public function __construct($name = 'default',

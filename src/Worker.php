@@ -685,7 +685,13 @@ class Worker implements QueueButtlerBatchWorkerInterface
      */
     protected function supportsAsyncSignals()
     {
-        return extension_loaded('pcntl');
+        if (extension_loaded('pcntl')) {
+            ini_set('pcre.jit', '0');
+
+            return function_exists('pcntl_async_signals');
+        }
+
+        return false;
     }
 
     /**
