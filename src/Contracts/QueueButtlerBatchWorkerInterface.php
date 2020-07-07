@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace WebChefs\QueueButler;
+namespace WebChefs\QueueButler\Contracts;
 
 interface QueueButtlerBatchWorkerInterface
 {

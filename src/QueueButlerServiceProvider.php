@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace WebChefs\QueueButler;
 
 // Package
-use WebChefs\QueueButler\BatchWorker;
-use WebChefs\QueueButler\BatchCommand;
-use WebChefs\QueueButler\QueueButtlerBatchWorkerInterface;
+use WebChefs\QueueButler\Laravel\BatchWorker;
+use WebChefs\QueueButler\Laravel\BatchCommand;
+use WebChefs\QueueButler\Contracts\QueueButtlerBatchWorkerInterface;
 
 // Framework
 use Illuminate\Support\ServiceProvider;

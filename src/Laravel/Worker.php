@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace WebChefs\QueueButler;
+namespace WebChefs\QueueButler\Laravel;
 
 /*
  |------------------------------------------------------------------------------
@@ -16,7 +16,8 @@ namespace WebChefs\QueueButler;
  */
 
 // Package
-use WebChefs\QueueButler\QueueButtlerBatchWorkerInterface;
+use WebChefs\QueueButler\Laravel\Looping;
+use WebChefs\QueueButler\Contracts\QueueButtlerBatchWorkerInterface;
 
 // PHP
 use Throwable;
@@ -24,7 +25,6 @@ use Throwable;
 // Framework
 use Illuminate\Support\Carbon;
 use Illuminate\Queue\WorkerOptions;
-use Illuminate\Queue\Events\Looping;
 use Illuminate\Contracts\Queue\Factory as QueueManager;
 use Illuminate\Contracts\Cache\Repository as CacheContract;
 use Illuminate\Queue\Events\JobProcessed;
@@ -35,7 +35,7 @@ use Illuminate\Database\DetectsLostConnections;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 
-class Worker implements QueueButtlerBatchWorkerInterface
+abstract class Worker implements QueueButtlerBatchWorkerInterface
 {
     use DetectsLostConnections;
 

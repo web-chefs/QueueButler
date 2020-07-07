@@ -2,10 +2,21 @@
 
 declare(strict_types=1);
 
-namespace WebChefs\QueueButler;
+namespace WebChefs\QueueButler\Laravel;
+
+/*
+ |------------------------------------------------------------------------------
+ | Copied from "framework/src/Illuminate/Queue/WorkCommand.php" on 2020/07/01
+ |------------------------------------------------------------------------------
+ |
+ | We dont extend from Laravel directly as it causes compatibility issues.
+ | To over come this we rather create a copy of the latest version of the
+ | WorkCommand class so we can support the widest range of Laravel version.
+ |
+ */
 
 // Package
-use WebChefs\QueueButler\QueueButtlerBatchWorkerInterface;
+use WebChefs\QueueButler\Contracts\QueueButtlerBatchWorkerInterface;
 
 // Framework
 use Illuminate\Support\Carbon;
@@ -17,7 +28,7 @@ use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Contracts\Cache\Repository as Cache;
 
-class WorkCommand extends Command
+abstract class WorkCommand extends Command
 {
     /**
      * The console command name.
