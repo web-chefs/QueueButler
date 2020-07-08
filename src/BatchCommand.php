@@ -93,7 +93,7 @@ class BatchCommand extends WorkCommand
             $this->option('sleep'),
             $this->option('tries'),
             $this->option('force'),
-            $this->option('stop-when-empty')
+            $this->option('stop-when-empty'),
             $this->option('time-limit'),
             $this->option('job-limit')
         );
