@@ -15,15 +15,18 @@ class BatchCommand extends WorkCommand
      *
      * @var string
      */
-    protected $signature = 'queue:batch
+    protected $signature = 'queue:work
                             {connection? : The name of the queue connection to work}
                             {--queue= : The names of the queues to work}
-                            {--delay=0 : Amount of time to delay failed jobs}
+                            {--daemon : Run the worker in daemon mode (Deprecated)}
+                            {--once : Only process the next job on the queue}
+                            {--stop-when-empty : Stop when the queue is empty}
+                            {--delay=0 : The number of seconds to delay failed jobs}
                             {--force : Force the worker to run even in maintenance mode}
                             {--memory=128 : The memory limit in megabytes}
                             {--sleep=3 : Number of seconds to sleep when no job is available}
                             {--timeout=60 : The number of seconds a child process can run}
-                            {--tries=0 : Number of times to attempt a job before logging it failed}
+                            {--tries=1 : Number of times to attempt a job before logging it failed}
                             {--time-limit=60 : The max time in seconds the batch should run for}
                             {--job-limit=100 : The maximum number of Jobs that the batch should process}';
 
@@ -39,7 +42,7 @@ class BatchCommand extends WorkCommand
      *
      * @return void
      */
-    public function fire()
+    public function fire(): void
     {
         if ($this->downForMaintenance()) {
             return $this->worker->sleep($this->option('sleep'));
@@ -66,20 +69,22 @@ class BatchCommand extends WorkCommand
      *
      * @param  string  $connection
      * @param  string  $queue
+     *
      * @return array
      */
     protected function runWorker($connection, $queue)
     {
         $this->worker->setCache($this->laravel['cache']->driver());
+
         return $this->worker->batch( $connection, $queue, $this->gatherWorkerOptions() );
     }
 
     /**
      * Gather all of the queue worker options as a single object.
      *
-     * @return \Illuminate\Queue\WorkerOptions
+     * @return BatchOptions
      */
-    protected function gatherWorkerOptions()
+    protected function gatherWorkerOptions(): BatchOptions
     {
         return new BatchOptions(
             $this->option('delay'),
@@ -88,6 +93,7 @@ class BatchCommand extends WorkCommand
             $this->option('sleep'),
             $this->option('tries'),
             $this->option('force'),
+            $this->option('stop-when-empty')
             $this->option('time-limit'),
             $this->option('job-limit')
         );

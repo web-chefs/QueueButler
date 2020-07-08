@@ -11,7 +11,6 @@ use WebChefs\QueueButler\Exceptions\StopBatch;
 
 class BatchWorker extends Worker
 {
-
     /**
      * @var int
      */
@@ -87,6 +86,7 @@ class BatchWorker extends Worker
      * Sleep the script for a given number of seconds.
      *
      * @param  int   $seconds
+     *
      * @return void
      */
     public function sleep($seconds)
@@ -111,7 +111,7 @@ class BatchWorker extends Worker
      *
      * @param  BatchOptions $options
      */
-    protected function checkLimits()
+    protected function checkLimits(): void
     {
         if ($this->isTimeLimit($this->options->timeLimit) || $this->isJobLimit($this->options->jobLimit)) {
             $this->stop();
@@ -125,7 +125,7 @@ class BatchWorker extends Worker
      *
      * @return boolean
      */
-    protected function isTimeLimit($timeLimit)
+    protected function isTimeLimit($timeLimit): bool
     {
         return (microtime(true) - $this->startTime) > $timeLimit;
     }
@@ -137,7 +137,7 @@ class BatchWorker extends Worker
      *
      * @return boolean
      */
-    protected function isJobLimit($jobLimit)
+    protected function isJobLimit($jobLimit): bool
     {
         return $this->jobCount >= $jobLimit;
     }
