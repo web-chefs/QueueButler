@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace WebChefs\QueueButler;
 
-// Framework
-use Illuminate\Queue\WorkerOptions;
+// Package
+use WebChefs\QueueButler\Laravel\WorkerOptions;
 
 class BatchOptions extends WorkerOptions
 {

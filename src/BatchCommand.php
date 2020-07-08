@@ -6,8 +6,7 @@ namespace WebChefs\QueueButler;
 
 // Package
 use WebChefs\QueueButler\BatchOptions;
-use WebChefs\QueueButler\WorkCommand;
-use WebChefs\QueueButler\QueueButtlerBatchWorkerInterface;
+use WebChefs\QueueButler\Laravel\WorkCommand;
 
 class BatchCommand extends WorkCommand
 {

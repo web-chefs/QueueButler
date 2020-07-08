@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace WebChefs\QueueButler;
 
 // Package
-use WebChefs\QueueButler\Worker;
 use WebChefs\QueueButler\BatchOptions;
+use WebChefs\QueueButler\Laravel\Worker;
 use WebChefs\QueueButler\Exceptions\StopBatch;
 
 // Framework
