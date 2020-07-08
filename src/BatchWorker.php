@@ -9,9 +9,6 @@ use WebChefs\QueueButler\BatchOptions;
 use WebChefs\QueueButler\Laravel\Worker;
 use WebChefs\QueueButler\Exceptions\StopBatch;
 
-// Framework
-use Illuminate\Queue\WorkerOptions;
-
 class BatchWorker extends Worker
 {
 
@@ -46,10 +43,10 @@ class BatchWorker extends Worker
      *
      * @param  string  $connectionName
      * @param  string  $queue
-     * @param  \Illuminate\Queue\WorkerOptions  $options
+     * @param  BatchOptions  $options
      * @return void
      */
-    public function daemon($connectionName, $queue, WorkerOptions $options)
+    public function daemon($connectionName, $queue, BatchOptions $options)
     {
         try {
            parent::daemon($connectionName, $queue, $options);
@@ -77,10 +74,10 @@ class BatchWorker extends Worker
     /**
      * Stop the process if necessary.
      *
-     * @param  WorkerOptions  $options
+     * @param  BatchOptions  $options
      * @param  int  $lastRestart
      */
-    protected function stopIfNecessary(WorkerOptions $options, $lastRestart, $job = null)
+    protected function stopIfNecessary(BatchOptions $options, $lastRestart, $job = null)
     {
         parent::stopIfNecessary($options, $lastRestart, $job);
         $this->checkLimits();
@@ -112,7 +109,7 @@ class BatchWorker extends Worker
     /**
      * Check our batch limits and stop the command if we reach a limit.
      *
-     * @param  WorkerOptions $options
+     * @param  BatchOptions $options
      */
     protected function checkLimits()
     {
