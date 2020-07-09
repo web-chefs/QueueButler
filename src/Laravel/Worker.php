@@ -15,19 +15,19 @@ namespace WebChefs\QueueButler\Laravel;
  |
  */
 
-// Package
-use WebChefs\QueueButler\Laravel\Looping;
-use WebChefs\QueueButler\Contracts\QueueButtlerBatchWorkerInterface;
-
 // PHP
 use Throwable;
 
+// Package
+use WebChefs\QueueButler\Laravel\Looping;
+use WebChefs\QueueButler\Laravel\WorkerOptions;
+use WebChefs\QueueButler\Contracts\QueueButtlerBatchWorkerInterface;
+
 // Framework
 use Illuminate\Support\Carbon;
-use Illuminate\Queue\WorkerOptions;
 use Illuminate\Contracts\Queue\Factory as QueueManager;
-use Illuminate\Contracts\Cache\Repository as CacheContract;
 use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Contracts\Cache\Repository as CacheContract;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\WorkerStopping;
 use Illuminate\Contracts\Events\Dispatcher;
