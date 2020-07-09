@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace WebChefs\QueueButler;
 
 // Package
-use WebChefs\QueueButler\BatchOptions;
 use WebChefs\QueueButler\Laravel\Worker;
 use WebChefs\QueueButler\Exceptions\StopBatch;
+use WebChefs\QueueButler\Laravel\WorkerOptions;
 
 class BatchWorker extends Worker
 {
@@ -26,10 +26,10 @@ class BatchWorker extends Worker
      *
      * @param  string  $connectionName
      * @param  string  $queue
-     * @param  BatchOptions  $options
+     * @param  WorkerOptions  $options
      * @return void
      */
-    public function batch($connectionName, $queue, BatchOptions $options)
+    public function batch($connectionName, $queue, WorkerOptions $options)
     {
         $this->options   = $options;
         $this->startTime = microtime(true);
@@ -42,10 +42,10 @@ class BatchWorker extends Worker
      *
      * @param  string  $connectionName
      * @param  string  $queue
-     * @param  BatchOptions  $options
+     * @param  WorkerOptions  $options
      * @return void
      */
-    public function daemon($connectionName, $queue, BatchOptions $options)
+    public function daemon($connectionName, $queue, WorkerOptions $options)
     {
         try {
            parent::daemon($connectionName, $queue, $options);
@@ -73,10 +73,10 @@ class BatchWorker extends Worker
     /**
      * Stop the process if necessary.
      *
-     * @param  BatchOptions  $options
+     * @param  WorkerOptions  $options
      * @param  int  $lastRestart
      */
-    protected function stopIfNecessary(BatchOptions $options, $lastRestart, $job = null)
+    protected function stopIfNecessary(WorkerOptions $options, $lastRestart, $job = null)
     {
         parent::stopIfNecessary($options, $lastRestart, $job);
         $this->checkLimits();
@@ -109,7 +109,7 @@ class BatchWorker extends Worker
     /**
      * Check our batch limits and stop the command if we reach a limit.
      *
-     * @param  BatchOptions $options
+     * @param  WorkerOptions $options
      */
     protected function checkLimits(): void
     {

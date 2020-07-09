@@ -7,6 +7,7 @@ namespace WebChefs\QueueButler;
 // Package
 use WebChefs\QueueButler\BatchOptions;
 use WebChefs\QueueButler\Laravel\WorkCommand;
+use WebChefs\QueueButler\Laravel\WorkerOptions;
 
 class BatchCommand extends WorkCommand
 {
@@ -84,7 +85,7 @@ class BatchCommand extends WorkCommand
      *
      * @return BatchOptions
      */
-    protected function gatherWorkerOptions(): BatchOptions
+    protected function gatherWorkerOptions(): WorkerOptions
     {
         return new BatchOptions(
             $this->option('delay'),
