@@ -44,5 +44,4 @@ class QueueButlerServiceProvider extends ServiceProvider
 
         $this->commands($this->commands);
     }
-
 }
