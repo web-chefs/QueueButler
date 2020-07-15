@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebChefs\QueueButler;
 
 // Package
+use WebChefs\QueueButler\BatchWorker;
 use WebChefs\QueueButler\BatchOptions;
 use WebChefs\QueueButler\Laravel\WorkCommand;
 use WebChefs\QueueButler\Laravel\WorkerOptions;
@@ -16,11 +17,9 @@ class BatchCommand extends WorkCommand
      *
      * @var string
      */
-    protected $signature = 'queue:work
+    protected $signature = 'queue:batch
                             {connection? : The name of the queue connection to work}
                             {--queue= : The names of the queues to work}
-                            {--daemon : Run the worker in daemon mode (Deprecated)}
-                            {--once : Only process the next job on the queue}
                             {--stop-when-empty : Stop when the queue is empty}
                             {--delay=0 : The number of seconds to delay failed jobs}
                             {--force : Force the worker to run even in maintenance mode}
@@ -37,6 +36,17 @@ class BatchCommand extends WorkCommand
      * @var string
      */
     protected $description = 'Processing jobs on the queue as single once off batch';
+
+    /**
+     * Create a new queue listen command.
+     *
+     * @param  \Illuminate\Queue\Worker  $worker
+     * @return void
+     */
+    public function __construct(BatchWorker $worker)
+    {
+        parent::__construct($worker);
+    }
 
     /**
      * Execute the console command.
