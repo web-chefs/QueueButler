@@ -47,15 +47,15 @@ class BatchOptions extends WorkerOptions
                                 $timeLimit = 60,
                                 $jobLimit = 100)
     {
-        parent::__construct($delay,
-                            $memory,
-                            $timeout,
-                            $sleep,
-                            $maxTries,
-                            $force,
-                            $stopWhenEmpty);
+        parent::__construct((int)$delay,
+                            (int)$memory,
+                            (int)$timeout,
+                            (int)$sleep,
+                            (int)$maxTries,
+                            (bool)$force,
+                            (bool)$stopWhenEmpty);
 
-        $this->timeLimit = $timeLimit;
-        $this->jobLimit  = $jobLimit;
+        $this->timeLimit = (int)$timeLimit;
+        $this->jobLimit  = (int)$jobLimit;
     }
 }
