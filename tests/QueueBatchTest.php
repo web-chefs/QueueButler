@@ -74,7 +74,7 @@ class QueueBatchTest extends TestCase
      *
      * @return void
      */
-    public function testQueueSetup(): void
+    public function testQueueSetup()
     {
         $queue = $this->queueTestDbQuery();
         $this->assertEquals($queue->count(), 0);
@@ -92,7 +92,7 @@ class QueueBatchTest extends TestCase
      *
      * @return void
      */
-    public function testBatchSinpleQueueProcessing(): void
+    public function testBatchSinpleQueueProcessing()
     {
         // $tables = \DB::connection()->getDoctrineSchemaManager()->listTableNames();
 
@@ -127,7 +127,7 @@ class QueueBatchTest extends TestCase
      *
      * @return void
      */
-    public function testBatchMultiWithJobLimit(): void
+    public function testBatchMultiWithJobLimit()
     {
         // Setup Job testing Application Bindings
         $this->setupJobAnswerToken();
@@ -162,7 +162,7 @@ class QueueBatchTest extends TestCase
      *
      * @return void
      */
-    protected function setupJobAnswerToken(): void
+    protected function setupJobAnswerToken()
     {
         $this->answerToken = Str::random();
 

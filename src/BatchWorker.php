@@ -111,7 +111,7 @@ class BatchWorker extends Worker
      *
      * @param  WorkerOptions $options
      */
-    protected function checkLimits(): void
+    protected function checkLimits()
     {
         if ($this->isTimeLimit($this->options->timeLimit) || $this->isJobLimit($this->options->jobLimit)) {
             $this->stop();

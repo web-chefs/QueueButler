@@ -41,7 +41,7 @@ class BatchCommand extends WorkCommand
      *
      * @return void
      */
-    public function fire(): void
+    public function fire()
     {
         if ($this->downForMaintenance()) {
             $this->worker->sleep($this->option('sleep'));
