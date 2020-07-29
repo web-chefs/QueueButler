@@ -39,13 +39,12 @@ class BatchCommand extends WorkCommand
     /**
      * Execute the console command.
      *
-     * @return void
+     * @return integer
      */
-    public function fire()
+    public function handle()
     {
-        if ($this->downForMaintenance()) {
-            $this->worker->sleep($this->option('sleep'));
-            return;
+        if ($this->downForMaintenance() && $this->option('once')) {
+            return $this->worker->sleep($this->option('sleep'));
         }
 
         // We'll listen to the processed and failed events so we can write information
@@ -53,14 +52,17 @@ class BatchCommand extends WorkCommand
         // which jobs are coming through a queue and be informed on its progress.
         $this->listenForEvents();
 
-        $connection = $this->argument('connection') ?: $this->laravel['config']['queue.default'];
+        $connection = $this->argument('connection')
+                        ?: $this->laravel['config']['queue.default'];
 
         // We need to get the right queue for the connection which is set in the queue
         // configuration file for the application. We will pull it based on the set
         // connection being run for the queue operation currently being executed.
         $queue = $this->getQueue($connection);
 
-        $this->runWorker($connection, $queue);
+        return $this->runWorker(
+            $connection, $queue
+        );
     }
 
     /**
@@ -69,7 +71,7 @@ class BatchCommand extends WorkCommand
      * @param  string  $connection
      * @param  string  $queue
      *
-     * @return array
+     * @return integer
      */
     protected function runWorker($connection, $queue)
     {

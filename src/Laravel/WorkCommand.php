@@ -137,9 +137,12 @@ abstract class WorkCommand extends Command
     protected function gatherWorkerOptions()
     {
         return new WorkerOptions(
-            $this->option('delay'), $this->option('memory'),
-            $this->option('timeout'), $this->option('sleep'),
-            $this->option('tries'), $this->option('force'),
+            $this->option('delay'),
+            $this->option('memory'),
+            $this->option('timeout'),
+            $this->option('sleep'),
+            $this->option('tries'),
+            $this->option('force'),
             $this->option('stop-when-empty')
         );
     }

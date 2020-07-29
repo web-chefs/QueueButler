@@ -34,21 +34,11 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\DetectsLostConnections;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Queue\Events\JobExceptionOccurred;
+use Illuminate\Queue\MaxAttemptsExceededException;
 
-abstract class Worker implements QueueButtlerBatchWorkerInterface
+abstract class Worker
 {
     use DetectsLostConnections;
-
-    const EXIT_SUCCESS = 0;
-    const EXIT_ERROR = 1;
-    const EXIT_MEMORY_LIMIT = 12;
-
-    /**
-     * The name of the worker.
-     *
-     * @var string
-     */
-    protected $name;
 
     /**
      * The queue manager instance.
@@ -100,13 +90,6 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
     public $paused = false;
 
     /**
-     * The callbacks used to pop jobs from queues.
-     *
-     * @var callable[]
-     */
-    protected static $popCallbacks = [];
-
-    /**
      * Create a new queue worker.
      *
      * @param  \Illuminate\Contracts\Queue\Factory  $manager
@@ -134,7 +117,7 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
      * @param  string  $queue
      * @param  \Illuminate\Queue\WorkerOptions  $options
      *
-     * @return int
+     * @return void
      */
     public function daemon($connectionName, $queue, WorkerOptions $options)
     {
@@ -149,11 +132,7 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
             // if it is we will just pause this worker for a given amount of time and
             // make sure we do not need to kill this worker process off completely.
             if (! $this->daemonShouldRun($options, $connectionName, $queue)) {
-                $status = $this->pauseWorker($options, $lastRestart);
-
-                if (! is_null($status)) {
-                    return $this->stop($status);
-                }
+                $this->pauseWorker($options, $lastRestart);
 
                 continue;
             }
@@ -185,11 +164,7 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
             // Finally, we will check to see if we have exceeded our memory limits or if
             // the queue should restart based on other indications. If so, we'll stop
             // this worker and let whatever is "monitoring" it restart the process.
-            $status = $this->stopIfNecessary($options, $lastRestart, $job);
-
-            if (! is_null($status)) {
-                return $this->stop($status);
-            }
+            $this->stopIfNecessary($options, $lastRestart, $job);
         }
     }
 
@@ -213,7 +188,7 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
                 );
             }
 
-            $this->kill(static::EXIT_ERROR);
+            $this->kill(1);
         });
 
         pcntl_alarm(
@@ -266,34 +241,34 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
      * @param  \Illuminate\Queue\WorkerOptions  $options
      * @param  int  $lastRestart
      *
-     * @return int|null
+     * @return void
      */
     protected function pauseWorker(WorkerOptions $options, $lastRestart)
     {
         $this->sleep($options->sleep > 0 ? $options->sleep : 1);
 
-        return $this->stopIfNecessary($options, $lastRestart);
+        $this->stopIfNecessary($options, $lastRestart);
     }
 
     /**
-     * Determine the exit code to stop the process if necessary.
+     * Stop the process if necessary.
      *
      * @param  \Illuminate\Queue\WorkerOptions  $options
      * @param  int  $lastRestart
      * @param  mixed  $job
      *
-     * @return int|null
+     * @return void
      */
     protected function stopIfNecessary(WorkerOptions $options, $lastRestart, $job = null)
     {
         if ($this->shouldQuit) {
-            return static::EXIT_SUCCESS;
+            $this->stop();
         } elseif ($this->memoryExceeded($options->memory)) {
-            return static::EXIT_MEMORY_LIMIT;
+            $this->stop(12);
         } elseif ($this->queueShouldRestart($lastRestart)) {
-            return static::EXIT_SUCCESS;
+            $this->stop();
         } elseif ($options->stopWhenEmpty && is_null($job)) {
-            return static::EXIT_SUCCESS;
+            $this->stop();
         }
     }
 
@@ -332,21 +307,14 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
      */
     protected function getNextJob($connection, $queue)
     {
-        $popJobCallback = function ($queue) use ($connection) {
-            return $connection->pop($queue);
-        };
-
         try {
-            if (isset(static::$popCallbacks[$this->name])) {
-                return (static::$popCallbacks[$this->name])($popJobCallback, $queue);
-            }
-
             foreach (explode(',', $queue) as $queue) {
-                if (! is_null($job = $popJobCallback($queue))) {
+                if (! is_null($job = $connection->pop($queue))) {
                     return $job;
                 }
             }
-        } catch (Throwable $e) {
+        }
+        catch (Throwable $e) {
             $this->exceptions->report($e);
 
             $this->stopWorkerIfLostConnection($e);
@@ -368,7 +336,13 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
     {
         try {
             return $this->process($connectionName, $job, $options);
-        } catch (Throwable $e) {
+        }
+        catch (\Error $e) {
+            dd($e);
+            throw $e;
+        }
+        catch (Throwable $e) {
+            dd($e);
             $this->exceptions->report($e);
 
             $this->stopWorkerIfLostConnection($e);
@@ -407,6 +381,8 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
             // over its maximum attempt limits, which could primarily happen when this job is
             // continually timing out and not actually throwing any exceptions from itself.
             $this->raiseBeforeJobEvent($connectionName, $job);
+
+            // dd($job);
 
             $this->markJobAsFailedIfAlreadyExceedsMaxAttempts(
                 $connectionName, $job, (int) $options->maxTries
@@ -450,9 +426,11 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
                     $connectionName, $job, (int) $options->maxTries, $e
                 );
 
-                $this->markJobAsFailedIfWillExceedMaxExceptions(
-                    $connectionName, $job, $e
-                );
+                if (method_exists($job, 'uuid') && method_exists($job, 'maxExceptions')) {
+                    $this->markJobAsFailedIfWillExceedMaxExceptions(
+                        $connectionName, $job, $e
+                    );
+                }
             }
 
             $this->raiseExceptionOccurredJobEvent(
@@ -463,7 +441,11 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
             // so it is not lost entirely. This'll let the job be retried at a later time by
             // another listener (or this same one). We will re-throw this exception after.
             if (! $job->isDeleted() && ! $job->isReleased() && ! $job->hasFailed()) {
-                $job->release($this->calculateBackoff($job, $options));
+                $job->release(
+                    method_exists($job, 'delaySeconds') && ! is_null($job->delaySeconds())
+                                ? $job->delaySeconds()
+                                : $options->delay
+                );
             }
         }
 
@@ -487,13 +469,13 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
     {
         $maxTries = ! is_null($job->maxTries()) ? $job->maxTries() : $maxTries;
 
-        $retryUntil = $job->retryUntil();
+        $timeoutAt = $job->timeoutAt();
 
-        if ($retryUntil && Carbon::now()->getTimestamp() <= $retryUntil) {
+        if ($timeoutAt && Carbon::now()->getTimestamp() <= $timeoutAt) {
             return;
         }
 
-        if (! $retryUntil && ($maxTries === 0 || $job->attempts() <= $maxTries)) {
+        if (! $timeoutAt && ($maxTries === 0 || $job->attempts() <= $maxTries)) {
             return;
         }
 
@@ -516,7 +498,7 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
     {
         $maxTries = ! is_null($job->maxTries()) ? $job->maxTries() : $maxTries;
 
-        if ($job->retryUntil() && $job->retryUntil() <= Carbon::now()->getTimestamp()) {
+        if ($job->timeoutAt() && $job->timeoutAt() <= Carbon::now()->getTimestamp()) {
             $this->failJob($job, $e);
         }
 
@@ -530,7 +512,6 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
      *
      * @param  string  $connectionName
      * @param  \Illuminate\Contracts\Queue\Job  $job
-     * @param  int  $maxTries
      * @param  \Throwable  $e
      *
      * @return void
@@ -564,26 +545,6 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
     protected function failJob($job, Throwable $e)
     {
         return $job->fail($e);
-    }
-
-    /**
-     * Calculate the backoff for the given job.
-     *
-     * @param  \Illuminate\Contracts\Queue\Job  $job
-     * @param  \Illuminate\Queue\WorkerOptions  $options
-     *
-     * @return int
-     */
-    protected function calculateBackoff($job, WorkerOptions $options)
-    {
-        $backoff = explode(
-            ',',
-            method_exists($job, 'backoff') && ! is_null($job->backoff())
-                        ? $job->backoff()
-                        : $options->backoff
-        );
-
-        return (int) ($backoff[$job->attempts() - 1] ?? last($backoff));
     }
 
     /**
@@ -636,7 +597,6 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
      * Determine if the queue worker should restart.
      *
      * @param  int|null  $lastRestart
-     *
      * @return bool
      */
     protected function queueShouldRestart($lastRestart)
@@ -685,13 +645,7 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
      */
     protected function supportsAsyncSignals()
     {
-        if (extension_loaded('pcntl')) {
-            ini_set('pcre.jit', '0');
-
-            return function_exists('pcntl_async_signals');
-        }
-
-        return false;
+        return extension_loaded('pcntl');
     }
 
     /**
@@ -711,20 +665,19 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
      *
      * @param  int  $status
      *
-     * @return int
+     * @return void
      */
     public function stop($status = 0)
     {
         $this->events->dispatch(new WorkerStopping($status));
 
-        return $status;
+        exit($status);
     }
 
     /**
      * Kill the process.
      *
      * @param  int  $status
-     *
      * @return void
      */
     public function kill($status = 0)
@@ -773,44 +726,11 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
      *
      * @param  \Illuminate\Contracts\Cache\Repository  $cache
      *
-     * @return $this
+     * @return void
      */
     public function setCache(CacheContract $cache)
     {
         $this->cache = $cache;
-
-        return $this;
-    }
-
-    /**
-     * Set the name of the worker.
-     *
-     * @param  string $name
-     *
-     * @return $this
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Register a callback to be executed to pick jobs.
-     *
-     * @param  string  $workerName
-     * @param  callable  $callback
-     *
-     * @return void
-     */
-    public static function popUsing($workerName, $callback)
-    {
-        if (is_null($callback)) {
-            unset(static::$popCallbacks[$workerName]);
-        } else {
-            static::$popCallbacks[$workerName] = $callback;
-        }
     }
 
     /**
@@ -827,7 +747,6 @@ abstract class Worker implements QueueButtlerBatchWorkerInterface
      * Set the queue manager instance.
      *
      * @param  \Illuminate\Contracts\Queue\Factory  $manager
-     *
      * @return void
      */
     public function setManager(QueueManager $manager)

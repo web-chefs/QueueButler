@@ -21,6 +21,16 @@ use Queue;
 class QueueBatchTest extends TestCase
 {
     /**
+     * Indicates if the console output should not be mocked as this is in
+     * integration test.
+     *
+     * This is only applicable in Laravel 5.7 and above.
+     *
+     * @var bool
+     */
+    public $mockConsoleOutput = false;
+
+    /**
      * @var string
      */
     protected $answerToken;
@@ -108,6 +118,7 @@ class QueueBatchTest extends TestCase
         $this->assertEquals(1, $queue->count());
 
         // Validate the job is our job
+        // By popping the job we inadvertently increment the number of attempts
         $job = Queue::pop();
         $this->assertEquals($job->resolveName(), QueueBatchTestJob::class);
 
@@ -115,7 +126,9 @@ class QueueBatchTest extends TestCase
         $job->release();
 
         // Test Job queue processing using queue:batch
-        $this->artisan('queue:batch', ['--job-limit' => 1, '--time-limit' => 2]);
+        // Attempts needs to be 2 because we manually popped our job once
+        $options = ['--job-limit' => 1, '--time-limit' => 2, '--tries' => 2];
+        $this->artisan('queue:batch', $options);
         $this->assertEquals(0, $queue->count());
         $this->assertEquals($this->answerToken, $this->app->make('QueueBatchJobAnswer'));
     }
@@ -137,7 +150,7 @@ class QueueBatchTest extends TestCase
         $queue = $this->queueTestDbQuery();
 
         // Create 5 test jobs
-        collect(range(0,4))->each(function() {
+        collect(range(1,5))->each(function() {
             dispatch(new QueueBatchTestJob);
         });
 
@@ -151,7 +164,7 @@ class QueueBatchTest extends TestCase
         $this->assertEquals(2, $queue->count());
 
         // Test Job queue processing the remaining jobs
-        $this->artisan('queue:batch', ['--job-limit' => 10, '--time-limit' => 5]);
+        $this->artisan('queue:batch', ['--job-limit' => 5, '--time-limit' => 5]);
 
         // Check queue is empty
         $this->assertEquals(0, $queue->count());
@@ -170,5 +183,4 @@ class QueueBatchTest extends TestCase
             return $this->answerToken;
         });
     }
-
 }
