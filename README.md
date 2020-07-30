@@ -9,14 +9,14 @@ Laravel Artisan commands that make it easy to run job queues using the Scheduler
 
 This is ideal for shared hosting or situations where you are not fully in control of the services or management of your hosting infrastructure and all you have access to is a Cron.
 
-## Versions
+## Versions Support Matrix
 
-**Confirmed to be working:**
+| QueueButler | PHP       | Laravel   |
+| :---------: | :-------: | :-------: |
+| 1.4         | 5.6 - 7.3 | 5.3 - 5.6 |
+| 2.0         | 7.0 - 7.4 | 5.5 - 7.x |
 
-* Laravel 5.3
-* Laravel 5.4
-* Laravel 5.5
-* Laravel 5.6
+**Note:** The PHP version support corresponds with the Laravel PHP support.
 
 ## Install
 
