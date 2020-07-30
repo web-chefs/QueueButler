@@ -113,7 +113,7 @@ For most use cases a 5-minute life-cycle will work well by creating a batch comm
 
 ``` php
 $schedule->command('queue:batch --time-limit=280 --job-limit=1000 --sleep=10')
-         ->everyMinute()
+         ->everyFiveMinutes()
          ->runInBackground()
          ->withoutOverlapping(5);
 ```
@@ -130,8 +130,8 @@ $schedule->command('queue:batch --queue=default,something,somethingelse --time-l
          ->withoutOverlapping(1);
 
 // High volume dedicated "notifications" queue
-$schedule->command('queue:batch --queue=notifications, --time-limit=180 --job-limit=500 --sleep=2')
-         ->everyMinute()
+$schedule->command('queue:batch --queue=notifications, --time-limit=175 --job-limit=500 --sleep=2')
+         ->everyThreeMinutes()
          ->runInBackground()
          ->withoutOverlapping(1);
 ```
@@ -149,7 +149,7 @@ $scheduledEvent = $schedule->command('queue:batch --time-limit=280 --job-limit=1
 // Match cache expiry with frequency
 // Set cache mutex expiry to One min (default is 1440)
 $scheduledEvent->expiresAt = 5;
-$scheduledEvent->everyMinute()
+$scheduledEvent->everyFiveMinutes()
                ->withoutOverlapping()
                ->runInBackground();
 ```
