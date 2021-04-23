@@ -72,6 +72,10 @@ class BatchWorker extends Worker implements QueueButtlerBatchWorkerInterface
             if (! $this->daemonShouldRun($options, $connectionName, $queue)) {
                 $this->pauseWorker($options, $lastRestart);
 
+                if ($this->exitCode !== null) {
+                    return $this->stop($status);
+                }
+
                 continue;
             }
 
@@ -137,7 +141,13 @@ class BatchWorker extends Worker implements QueueButtlerBatchWorkerInterface
      */
     protected function stopIfNecessary(WorkerOptions $options, $lastRestart, $job = null)
     {
-        parent::stopIfNecessary($options, $lastRestart, $job);
+        $status = parent::stopIfNecessary($options, $lastRestart, $job);
+
+        if ($status !== null) {
+            $this->stop($status);
+            return;
+        }
+
         $this->checkLimits();
     }
 
