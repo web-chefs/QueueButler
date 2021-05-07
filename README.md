@@ -18,6 +18,33 @@ This is ideal for shared hosting or situations where you are not fully in contro
 
 **Note:** The PHP version support corresponds with the Laravel PHP support.
 
+## Laravel 8+
+
+As of Laravel 8, the QueueButler package is no longer required for running batch job queue processing via the cron scheduler.
+
+Laravel 8 has introduced the `max-jobs` and `max-time` options, making it possible to use Laravel's built-in `queue:work` command.
+
+``` php
+$schedule->command('queue:work --queue=default,something,somethingelse --max-time=50 --max-jobs=100 --sleep=10 --tries=3 --backoff=60')
+         ->everyMinute()
+         ->runInBackground()
+         ->withoutOverlapping(1);
+```
+
+To run multiple queue workers in Laravel  8 for the same queues it is recommended to use the `--name=` option.
+
+``` php
+$schedule->command('queue:work --name=job-worker-1 --queue=default,priority --max-time=280 --max-jobs=1000 --sleep=5 --tries=3 --backoff=180')
+         ->everyMinute()
+         ->runInBackground()
+         ->withoutOverlapping(5);
+
+$schedule->command('queue:work --name=job-worker-2 --queue=default,priority --max-time=280 --max-jobs=1000 --sleep=5 --tries=3 --backoff=180')
+         ->everyMinute()
+         ->runInBackground()
+         ->withoutOverlapping(5);
+```
+
 ## Install
 
 __Via Composer__
